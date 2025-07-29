@@ -1,0 +1,9 @@
+export enum AttendanceStatus {
+  PRESENT = "PRESENT",
+  ABSENT = "ABSENT",
+  // LATE
+  STUDY_LEAVE = "STUDY_LEAVE",
+  HOLIDAY = "HOLIDAY",
+  SUSPENDED = "SUSPENDED",
+  NOT_MARKED = "NOT_MARKED",
+}
