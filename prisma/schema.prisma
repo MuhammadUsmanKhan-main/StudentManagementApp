@@ -1,0 +1,324 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+// schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  TEACHER
+  PARENT
+  STUDENT
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  // LATE
+  STUDY_LEAVE
+  HOLIDAY
+  SUSPENDED
+  NOT_MARKED
+}
+
+enum WeekDays {
+  MON
+  TUE
+  WED
+  THU
+  FRI
+}
+// enum HomeworkStatus {
+//   PENDING
+//   COMPLETED
+//   LATE
+// }
+
+// model Teacher {
+//   id          Int       @id @default(autoincrement())
+//   name        String
+//   email       String    @unique
+//   phone       String?
+//   password    String
+//   subjects    Subject[]
+//   timetableSlots Timetable[]
+
+//   createdAt   DateTime  @default(now())
+//   updatedAt   DateTime  @updatedAt
+// }
+
+model Admin {
+  id           String         @id @default(uuid())
+  firstName    String
+  lastName     String
+  email        String         @unique
+  phone        String
+  password     String // For parent portal access
+  students     Student[]
+  teachers     Teacher[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Notification Notification[]
+}
+
+model Student {
+  id            String         @id @default(uuid())
+  firstName     String
+  lastName      String
+  email         String         @unique
+  password      String
+  phone         String?
+  rollNumber    String
+  courseId      String
+  course        Course         @relation(fields: [courseId], references: [id])
+  sectionId     String
+  section       Section        @relation(fields: [sectionId], references: [id])
+  // parents     Parent[]
+  admin         Admin          @relation(fields: [adminId], references: [id])
+  adminId       String // For
+  attendances   Attendance[]
+  homeworks     Homework[]
+  feeStructures FeeStructure[]
+  teachers      Teacher[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Admin Admin[]
+  // FeeStructure FeeStructure[]
+}
+
+model Teacher {
+  id             String      @id @default(uuid())
+  firstName      String
+  lastName       String
+  email          String      @unique
+  phone          String
+  password       String
+  admin          Admin       @relation(fields: [adminId], references: [id])
+  adminId        String
+  subjects       Subject[]
+  timetableSlots Timetable[]
+  student        Student[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  Homework Homework[]
+
+  Attendance Attendance[]
+
+  Notification Notification[]
+}
+
+model Course {
+  id          String    @id @default(uuid())
+  name        String
+  grade Int       @unique()
+  description String?
+  sections    Section[]
+  subjects    Subject[]
+  books       Book[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Student Student[]
+
+  FeeStructure FeeStructure[]
+}
+
+// discussion needed Section related to course
+model Section {
+  id             String      @id @default(uuid())
+  name           section
+  courseId       String
+  course         Course      @relation(fields: [courseId], references: [id])
+  students       Student[]
+  timetableSlots Timetable[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, courseId])
+}
+
+model Subject {
+  id             String      @id @default(uuid())
+  name           String
+  code           String?
+  courseId       String
+  course         Course      @relation(fields: [courseId], references: [id])
+  teachers       Teacher[]
+  homeworks      Homework[]
+  timetableSlots Timetable[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([code, courseId]) // Ensures code is unique for each course
+}
+
+model Timetable {
+  id        String   @id @default(uuid())
+  day       WeekDays // MON, TUE, etc.
+  period    String
+  startTime DateTime
+  endTime   DateTime
+  teacherId String
+  teacher   Teacher  @relation(fields: [teacherId], references: [id])
+  subjectId String
+  subject   Subject  @relation(fields: [subjectId], references: [id])
+  sectionId String
+  section   Section  @relation(fields: [sectionId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Homework {
+  id           String       @id @default(uuid())
+  title        String
+  description  String?
+  subjectId    String
+  subject      Subject   @relation(fields: [subjectId], references: [id])
+  assignedById String
+  assignedBy   Teacher   @relation(fields: [assignedById], references: [id])
+  studentId    String
+  student      Student   @relation(fields: [studentId], references: [id])
+  assignedAt   DateTime  @default(now())
+  dueDate      DateTime?
+  status       Boolean   @default(false)// Pending, Completed, etc.
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Attendance {
+  id         String           @id @default(uuid())
+  date       DateTime
+  status     AttendanceStatus  @default(NOT_MARKED)
+  studentId  String
+  student    Student          @relation(fields: [studentId], references: [id])
+  markedById String
+  markedBy   Teacher          @relation(fields: [markedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FeeStructure {
+  id        String    @id @default(uuid())
+  name      String
+  challanNo String    @unique
+  amount    Float
+  dueDate   DateTime
+  paidDate  DateTime?
+  status    String // Paid, Unpaid, Partial
+  feeCycle  String // Month name
+  feeYear   String // Academic year
+  studentId String
+  student   Student   @relation(fields: [studentId], references: [id])
+  courseId  String
+  course    Course    @relation(fields: [courseId], references: [id])
+  frequency String // Monthly, Quarterly, etc.
+  isActive  Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Book {
+  id        String  @id @default(uuid())
+  title     String
+  subject   String?
+  courseId  String
+  course    Course  @relation(fields: [courseId], references: [id])
+  author    String?
+  publisher String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id        String  @id @default(uuid())
+  title     String
+  message   String
+  adminId   String
+  admin     Admin   @relation(fields: [adminId], references: [id])
+  teacherId String
+  teacher   Teacher @relation(fields: [teacherId], references: [id])
+  isRead    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// discussion needed
+
+// model Message {
+//    id          String   @id @default(uuid())
+//   // senderId    Int
+//   // sender      User     @relation(fields: [senderId], references: [id])
+//   // receiverId  Int
+//   // receiver    User     @relation(fields: [receiverId], references: [id])
+//   content     String
+//   isRead      Boolean  @default(false)
+
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+// }
+
+// model User_Account_Verification {
+//   id        String           @id @default(uuid())
+//   code      String
+//   type      user_verfication @default(email_verification)
+//   user      User             @relation(fields: [user_id], references: [id])
+//   user_id   String           @unique
+//   limit     Int
+//   createdAt DateTime         @default(now())
+//   updatedAt DateTime         @updatedAt()
+// }
+
+// enum user_account_provdiers {
+//  google
+//  email
+// }
+enum section {
+  A
+  B
+  C
+  D
+  E
+  F
+}
+
+enum user_verfication {
+  email_verification
+}
+
+// Table user_account_providers {
+// id integer [primary key]
+// user_id integer [ref: > users.id, not null] // many-to-one 
+// provider user_account_provdiers.provider [default: "email"]
+
+// created_at timestamp [default: `now()`]
+// update_at timestamp
+// }
