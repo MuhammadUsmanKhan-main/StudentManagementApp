@@ -10,13 +10,16 @@ exports.SectionModule = void 0;
 const common_1 = require("@nestjs/common");
 const section_service_1 = require("./section.service");
 const section_controller_1 = require("./section.controller");
+const course_module_1 = require("../course/course.module");
+const course_service_1 = require("../course/course.service");
 let SectionModule = class SectionModule {
 };
 exports.SectionModule = SectionModule;
 exports.SectionModule = SectionModule = __decorate([
     (0, common_1.Module)({
+        imports: [course_module_1.CourseModule],
         controllers: [section_controller_1.SectionController],
-        providers: [section_service_1.SectionService],
+        providers: [section_service_1.SectionService, course_service_1.CourseService],
     })
 ], SectionModule);
 //# sourceMappingURL=section.module.js.map

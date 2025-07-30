@@ -13,18 +13,47 @@ exports.HomeworkService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const timetable_service_1 = require("../timetable/timetable.service");
+const section_service_1 = require("../section/section.service");
+const subject_service_1 = require("../subject/subject.service");
+const teacher_service_1 = require("../teacher/teacher.service");
 let HomeworkService = class HomeworkService {
-    constructor(prismaService, timeTableService) {
+    constructor(prismaService, timetableService, sectionService, subjectService, teacherService) {
         this.prismaService = prismaService;
-        this.timeTableService = timeTableService;
+        this.timetableService = timetableService;
+        this.sectionService = sectionService;
+        this.subjectService = subjectService;
+        this.teacherService = teacherService;
     }
     async findSubject() { }
     async createHomework(createHomeworkDto) {
-        const getStudent = await this.timeTableService.findTeacherTimetableOfSpecificSection(createHomeworkDto.assignedById, createHomeworkDto.sectionId);
-        console.log({ getStudent: getStudent[0].section.students });
-        const students = getStudent[0].section.students;
+        const subjectExist = await this.prismaService.subject.findUnique({
+            where: {
+                id: createHomeworkDto.subjectId,
+            },
+        });
+        const teacherExist = await this.prismaService.teacher.findUnique({
+            where: {
+                id: createHomeworkDto.assignedById,
+            },
+        });
+        const sectionExist = await this.prismaService.section.findUnique({
+            where: {
+                id: createHomeworkDto.sectionId,
+            },
+        });
+        if (!subjectExist) {
+            throw new common_1.NotFoundException("Subject not found");
+        }
+        if (!sectionExist) {
+            throw new common_1.NotFoundException("Section not found");
+        }
+        if (!teacherExist) {
+            throw new common_1.NotFoundException("Teacher not found");
+        }
+        const getStudent = await this.timetableService.findTeacherTimetableOfSpecificSection(createHomeworkDto.assignedById, createHomeworkDto.sectionId);
+        const students = getStudent?.section?.students;
         if (!students || students.length === 0) {
-            throw new Error("No students found in the selected section.");
+            throw new common_1.NotFoundException("No students found in the selected section.");
         }
         const createdHomeworks = await Promise.all(students.map((student) => this.prismaService.homework.create({
             data: {
@@ -47,6 +76,9 @@ exports.HomeworkService = HomeworkService;
 exports.HomeworkService = HomeworkService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        timetable_service_1.TimetableService])
+        timetable_service_1.TimetableService,
+        section_service_1.SectionService,
+        subject_service_1.SubjectService,
+        teacher_service_1.TeacherService])
 ], HomeworkService);
 //# sourceMappingURL=homework.service.js.map

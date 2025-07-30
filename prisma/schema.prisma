@@ -47,6 +47,7 @@ enum WeekDays {
   THU
   FRI
 }
+
 // enum HomeworkStatus {
 //   PENDING
 //   COMPLETED
@@ -131,7 +132,7 @@ model Teacher {
 model Course {
   id          String    @id @default(uuid())
   name        String
-  grade Int       @unique()
+  grade       Int       @unique()
   description String?
   sections    Section[]
   subjects    Subject[]
@@ -161,17 +162,18 @@ model Section {
 }
 
 model Subject {
-  id             String      @id @default(uuid())
+  id             String       @id @default(uuid())
   name           String
   code           String?
   courseId       String
-  course         Course      @relation(fields: [courseId], references: [id])
+  course         Course       @relation(fields: [courseId], references: [id])
   teachers       Teacher[]
   homeworks      Homework[]
   timetableSlots Timetable[]
+  Attendance     Attendance[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
   @@unique([code, courseId]) // Ensures code is unique for each course
 }
 
@@ -193,7 +195,7 @@ model Timetable {
 }
 
 model Homework {
-  id           String       @id @default(uuid())
+  id           String    @id @default(uuid())
   title        String
   description  String?
   subjectId    String
@@ -204,7 +206,7 @@ model Homework {
   student      Student   @relation(fields: [studentId], references: [id])
   assignedAt   DateTime  @default(now())
   dueDate      DateTime?
-  status       Boolean   @default(false)// Pending, Completed, etc.
+  status       Boolean   @default(false) // Pending, Completed, etc.
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -213,14 +215,17 @@ model Homework {
 model Attendance {
   id         String           @id @default(uuid())
   date       DateTime
-  status     AttendanceStatus  @default(NOT_MARKED)
+  status     AttendanceStatus @default(NOT_MARKED)
   studentId  String
   student    Student          @relation(fields: [studentId], references: [id])
   markedById String
   markedBy   Teacher          @relation(fields: [markedById], references: [id])
+  subjectId  String
+  subject    Subject          @relation(fields: [subjectId], references: [id])
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@unique([studentId, date, subjectId, markedById])
 }
 
 model FeeStructure {

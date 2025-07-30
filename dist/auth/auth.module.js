@@ -22,6 +22,12 @@ const admin_service_1 = require("../admin/admin.service");
 const admin_module_1 = require("../admin/admin.module");
 const teacher_service_1 = require("../teacher/teacher.service");
 const student_service_1 = require("../student/student.service");
+const section_module_1 = require("../section/section.module");
+const section_service_1 = require("../section/section.service");
+const student_module_1 = require("../student/student.module");
+const teacher_module_1 = require("../teacher/teacher.module");
+const course_module_1 = require("../course/course.module");
+const course_service_1 = require("../course/course.service");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -30,20 +36,36 @@ exports.AuthModule = AuthModule = __decorate([
         imports: [
             admin_module_1.AdminModule,
             user_module_1.UserModule,
+            student_module_1.StudentModule,
+            teacher_module_1.TeacherModule,
+            section_module_1.SectionModule,
+            course_module_1.CourseModule,
             jwt_1.JwtModule.registerAsync({
                 imports: [config_1.ConfigModule],
                 useFactory: async (configService) => ({
-                    secret: configService.get('JWT_SECRET'),
+                    secret: configService.get("JWT_SECRET"),
                     signOptions: {
-                        expiresIn: parseInt(configService.getOrThrow('ACCESS_TOKEN_VALIDITY_DURATION_IN_SEC')),
+                        expiresIn: parseInt(configService.getOrThrow("ACCESS_TOKEN_VALIDITY_DURATION_IN_SEC")),
                     },
                 }),
                 inject: [config_1.ConfigService],
             }),
-            mailer_module_1.MailerModule
+            mailer_module_1.MailerModule,
         ],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, local_strategy_1.LocalStrategy, jwt_strategy_1.JwtStrategy, config_1.ConfigService, user_service_1.UserService, admin_service_1.AdminService, teacher_service_1.TeacherService, student_service_1.StudentService, mailer_service_1.MailerService],
+        providers: [
+            auth_service_1.AuthService,
+            local_strategy_1.LocalStrategy,
+            jwt_strategy_1.JwtStrategy,
+            config_1.ConfigService,
+            user_service_1.UserService,
+            admin_service_1.AdminService,
+            teacher_service_1.TeacherService,
+            student_service_1.StudentService,
+            section_service_1.SectionService,
+            course_service_1.CourseService,
+            mailer_service_1.MailerService,
+        ],
         exports: [auth_service_1.AuthService, jwt_1.JwtModule],
     })
 ], AuthModule);

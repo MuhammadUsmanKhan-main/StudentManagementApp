@@ -1,8 +1,10 @@
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateSubjectDto } from "./dto/createSubject.dto";
+import { CourseService } from "src/course/course.service";
 export declare class SubjectService {
     private readonly prismaService;
-    constructor(prismaService: PrismaService);
+    private readonly courseService;
+    constructor(prismaService: PrismaService, courseService: CourseService);
     findSubject(code: string, courseId: string): Promise<{
         id: string;
         name: string;

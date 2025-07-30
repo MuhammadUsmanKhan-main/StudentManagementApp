@@ -6,7 +6,6 @@ export declare class CreateHomeworkDto extends HomeworkEntity {
     assignedById: string;
     dueDate: Date;
     status: boolean;
-    studentId: string;
     subjectId: string;
     sectionId: string;
 }

@@ -12,9 +12,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TimetableService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const teacher_service_1 = require("../teacher/teacher.service");
+const subject_service_1 = require("../subject/subject.service");
+const section_service_1 = require("../section/section.service");
 let TimetableService = class TimetableService {
-    constructor(prismaService) {
+    constructor(prismaService, teacherService, subjectService, sectionService) {
         this.prismaService = prismaService;
+        this.teacherService = teacherService;
+        this.subjectService = subjectService;
+        this.sectionService = sectionService;
     }
     async findTeachersTimetable(teacherId) {
         const teacherTimeTable = await this.prismaService.timetable.findMany({
@@ -43,7 +49,7 @@ let TimetableService = class TimetableService {
         return timeTable;
     }
     async findTeacherTimetableOfSpecificSection(teacherId, sectionId) {
-        const timeTable = await this.prismaService.timetable.findMany({
+        const timeTable = await this.prismaService.timetable.findFirst({
             where: {
                 teacherId,
                 sectionId,
@@ -63,6 +69,30 @@ let TimetableService = class TimetableService {
         return timeTable;
     }
     async createRecordOnTimetable(createTimetableDto) {
+        const teacherExist = await this.prismaService.teacher.findUnique({
+            where: {
+                id: createTimetableDto.teacherId,
+            },
+        });
+        if (!teacherExist) {
+            throw new common_1.NotFoundException("Teacher doesnot exist");
+        }
+        const subjectExist = await this.prismaService.subject.findUnique({
+            where: {
+                id: createTimetableDto.subjectId,
+            },
+        });
+        if (!subjectExist) {
+            throw new common_1.NotFoundException("Subject does not exist");
+        }
+        const sectionExist = await this.prismaService.section.findUnique({
+            where: {
+                id: createTimetableDto.sectionId,
+            },
+        });
+        if (!sectionExist) {
+            throw new common_1.NotFoundException("Section does not exist");
+        }
         const checkExistingRecordOnTimeTable = await this.findRecordOnTimetable(createTimetableDto);
         if (checkExistingRecordOnTimeTable) {
             throw new common_1.ConflictException("Record already exist");
@@ -111,6 +141,9 @@ let TimetableService = class TimetableService {
 exports.TimetableService = TimetableService;
 exports.TimetableService = TimetableService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        teacher_service_1.TeacherService,
+        subject_service_1.SubjectService,
+        section_service_1.SectionService])
 ], TimetableService);
 //# sourceMappingURL=timetable.service.js.map
