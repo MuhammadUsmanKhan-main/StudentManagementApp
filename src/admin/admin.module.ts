@@ -11,10 +11,14 @@ import { StudentService } from 'src/student/student.service';
 import { TeacherService } from 'src/teacher/teacher.service';
 import { StudentModule } from 'src/student/student.module';
 import { TeacherModule } from 'src/teacher/teacher.module';
+import { SectionModule } from 'src/section/section.module';
+import { SectionService } from 'src/section/section.service';
+import { CourseModule } from 'src/course/course.module';
+import { CourseService } from 'src/course/course.service';
 
 @Module({
-  imports:[StudentModule, TeacherModule],
+  imports:[StudentModule, SectionModule, CourseModule,TeacherModule],
   controllers: [AdminController],
-  providers: [AdminService, StudentService, TeacherService, JwtService],
+  providers: [AdminService, SectionService, CourseService,StudentService, TeacherService, JwtService],
 })
 export class AdminModule {}

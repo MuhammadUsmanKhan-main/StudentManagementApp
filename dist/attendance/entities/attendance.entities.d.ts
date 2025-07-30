@@ -4,6 +4,7 @@ export declare class AttendanceEntity implements Attendance {
     date: Date;
     status: $Enums.AttendanceStatus;
     studentId: string;
+    subjectId: string;
     markedById: string;
     createdAt: Date;
     updatedAt: Date;

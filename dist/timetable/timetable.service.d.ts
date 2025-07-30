@@ -1,8 +1,14 @@
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateTimetableDto } from "./dto/createTimetable.dto";
+import { TeacherService } from "src/teacher/teacher.service";
+import { SubjectService } from "src/subject/subject.service";
+import { SectionService } from "src/section/section.service";
 export declare class TimetableService {
     private readonly prismaService;
-    constructor(prismaService: PrismaService);
+    private readonly teacherService;
+    private readonly subjectService;
+    private readonly sectionService;
+    constructor(prismaService: PrismaService, teacherService: TeacherService, subjectService: SubjectService, sectionService: SectionService);
     findTeachersTimetable(teacherId: string): Promise<{
         id: string;
         day: import(".prisma/client").$Enums.WeekDays;
@@ -39,7 +45,7 @@ export declare class TimetableService {
         createdAt: Date;
         updatedAt: Date;
     }>;
-    findTeacherTimetableOfSpecificSection(teacherId: string, sectionId: string): Promise<({
+    findTeacherTimetableOfSpecificSection(teacherId: string, sectionId: string): Promise<{
         section: {
             students: {
                 id: string;
@@ -62,7 +68,7 @@ export declare class TimetableService {
         sectionId: string;
         createdAt: Date;
         updatedAt: Date;
-    })[]>;
+    }>;
     createRecordOnTimetable(createTimetableDto: CreateTimetableDto): Promise<{
         message: string;
         teacher: {

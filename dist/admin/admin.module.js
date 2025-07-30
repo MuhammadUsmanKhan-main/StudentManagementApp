@@ -15,14 +15,18 @@ const student_service_1 = require("../student/student.service");
 const teacher_service_1 = require("../teacher/teacher.service");
 const student_module_1 = require("../student/student.module");
 const teacher_module_1 = require("../teacher/teacher.module");
+const section_module_1 = require("../section/section.module");
+const section_service_1 = require("../section/section.service");
+const course_module_1 = require("../course/course.module");
+const course_service_1 = require("../course/course.service");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
 exports.AdminModule = AdminModule = __decorate([
     (0, common_1.Module)({
-        imports: [student_module_1.StudentModule, teacher_module_1.TeacherModule],
+        imports: [student_module_1.StudentModule, section_module_1.SectionModule, course_module_1.CourseModule, teacher_module_1.TeacherModule],
         controllers: [admin_controller_1.AdminController],
-        providers: [admin_service_1.AdminService, student_service_1.StudentService, teacher_service_1.TeacherService, jwt_1.JwtService],
+        providers: [admin_service_1.AdminService, section_service_1.SectionService, course_service_1.CourseService, student_service_1.StudentService, teacher_service_1.TeacherService, jwt_1.JwtService],
     })
 ], AdminModule);
 //# sourceMappingURL=admin.module.js.map

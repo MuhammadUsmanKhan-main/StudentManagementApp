@@ -7,6 +7,14 @@ import { JwtService } from '@nestjs/jwt';
 import { MailerService } from 'src/mailer/mailer.service';
 import { TimetableController } from './timetable.controller';
 import { TimetableService } from './timetable.service';
+import { TeacherModule } from 'src/teacher/teacher.module';
+import { SectionModule } from 'src/section/section.module';
+import { SubjectModule } from 'src/subject/subject.module';
+import { TeacherService } from 'src/teacher/teacher.service';
+import { SectionService } from 'src/section/section.service';
+import { SubjectService } from 'src/subject/subject.service';
+import { CourseModule } from 'src/course/course.module';
+import { CourseService } from 'src/course/course.service';
 // import { SubjectService } from './subject.service';
 // import { SubjectController } from './subject.controller';
 // import { TeacherController } from './teacher.controller';
@@ -15,7 +23,8 @@ import { TimetableService } from './timetable.service';
 // import { AdminController } from './admin.controller';
 
 @Module({
+  imports:[TeacherModule, SectionModule, SubjectModule, CourseModule],
   controllers: [TimetableController],
-  providers: [TimetableService],
+  providers: [TimetableService, TeacherService, SectionService, SubjectService, CourseService],
 })
 export class TimetableModule {}

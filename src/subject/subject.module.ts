@@ -7,13 +7,16 @@ import { JwtService } from '@nestjs/jwt';
 import { MailerService } from 'src/mailer/mailer.service';
 import { SubjectService } from './subject.service';
 import { SubjectController } from './subject.controller';
+import { CourseModule } from 'src/course/course.module';
+import { CourseService } from 'src/course/course.service';
 // import { TeacherController } from './teacher.controller';
 // import { TeacherService } from './teacher.service';
 // import { AdminService } from './admin.service';
 // import { AdminController } from './admin.controller';
 
 @Module({
+  imports:[CourseModule],
   controllers: [SubjectController],
-  providers: [SubjectService],
+  providers: [SubjectService, CourseService],
 })
 export class SubjectModule {}

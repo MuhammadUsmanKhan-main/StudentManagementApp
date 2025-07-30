@@ -9,6 +9,8 @@ import { MailerService } from "src/mailer/mailer.service";
 // import { CourseService } from "./course.service";
 import { SectionService } from "./section.service";
 import { SectionController } from "./section.controller";
+import { CourseModule } from "src/course/course.module";
+import { CourseService } from "src/course/course.service";
 // import { SubjectService } from './subject.service';
 // import { SubjectController } from './subject.controller';
 // import { TeacherController } from './teacher.controller';
@@ -17,8 +19,8 @@ import { SectionController } from "./section.controller";
 // import { AdminController } from './admin.controller';
 
 @Module({
-//   imports: [],
+  imports: [CourseModule],
   controllers: [SectionController],
-  providers: [SectionService],
+  providers: [SectionService, CourseService],
 })
 export class SectionModule {}

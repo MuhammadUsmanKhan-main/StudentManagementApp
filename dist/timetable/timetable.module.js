@@ -10,13 +10,22 @@ exports.TimetableModule = void 0;
 const common_1 = require("@nestjs/common");
 const timetable_controller_1 = require("./timetable.controller");
 const timetable_service_1 = require("./timetable.service");
+const teacher_module_1 = require("../teacher/teacher.module");
+const section_module_1 = require("../section/section.module");
+const subject_module_1 = require("../subject/subject.module");
+const teacher_service_1 = require("../teacher/teacher.service");
+const section_service_1 = require("../section/section.service");
+const subject_service_1 = require("../subject/subject.service");
+const course_module_1 = require("../course/course.module");
+const course_service_1 = require("../course/course.service");
 let TimetableModule = class TimetableModule {
 };
 exports.TimetableModule = TimetableModule;
 exports.TimetableModule = TimetableModule = __decorate([
     (0, common_1.Module)({
+        imports: [teacher_module_1.TeacherModule, section_module_1.SectionModule, subject_module_1.SubjectModule, course_module_1.CourseModule],
         controllers: [timetable_controller_1.TimetableController],
-        providers: [timetable_service_1.TimetableService],
+        providers: [timetable_service_1.TimetableService, teacher_service_1.TeacherService, section_service_1.SectionService, subject_service_1.SubjectService, course_service_1.CourseService],
     })
 ], TimetableModule);
 //# sourceMappingURL=timetable.module.js.map

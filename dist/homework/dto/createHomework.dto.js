@@ -49,11 +49,6 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsUUID)(),
     __metadata("design:type", String)
-], CreateHomeworkDto.prototype, "studentId", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsUUID)(),
-    __metadata("design:type", String)
 ], CreateHomeworkDto.prototype, "subjectId", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),

@@ -1,13 +1,24 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateTimetableDto } from "./dto/createTimetable.dto";
+import { TeacherService } from "src/teacher/teacher.service";
+import { SubjectService } from "src/subject/subject.service";
+import { SectionService } from "src/section/section.service";
 // import { CreateSubjectDto } from "./dto/createSubject.dto";
 
 // import { CreateCourseDto } from "./dto/createCourse.dto";
 
 @Injectable()
 export class TimetableService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService,
+    private readonly teacherService:TeacherService,
+    private readonly subjectService:SubjectService,
+    private readonly sectionService:SectionService
+  ) {}
 
   async findTeachersTimetable(teacherId: string) {
     const teacherTimeTable = await this.prismaService.timetable.findMany({
@@ -58,7 +69,7 @@ export class TimetableService {
     teacherId: string,
     sectionId: string
   ) {
-    const timeTable = await this.prismaService.timetable.findMany({
+    const timeTable = await this.prismaService.timetable.findFirst({
       where: {
         // day: createTimetableDto.day,
         // period: createTimetableDto.period,
@@ -100,6 +111,32 @@ export class TimetableService {
   async createRecordOnTimetable(createTimetableDto: CreateTimetableDto) {
     // check existing record
 
+    const teacherExist = await this.prismaService.teacher.findUnique({
+      where: {
+        id: createTimetableDto.teacherId,
+      },
+    });
+
+    if (!teacherExist) {
+      throw new NotFoundException("Teacher doesnot exist");
+    }
+    const subjectExist = await this.prismaService.subject.findUnique({
+      where: {
+        id: createTimetableDto.subjectId,
+      },
+    });
+
+    if (!subjectExist) {
+      throw new NotFoundException("Subject does not exist");
+    }
+    const sectionExist = await this.prismaService.section.findUnique({
+      where: {
+        id: createTimetableDto.sectionId,
+      },
+    });
+    if (!sectionExist) {
+      throw new NotFoundException("Section does not exist");
+    }
     const checkExistingRecordOnTimeTable =
       await this.findRecordOnTimetable(createTimetableDto);
 

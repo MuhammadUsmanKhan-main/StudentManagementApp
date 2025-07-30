@@ -12,14 +12,35 @@ const homework_controller_1 = require("./homework.controller");
 const homework_service_1 = require("./homework.service");
 const timetable_service_1 = require("../timetable/timetable.service");
 const timetable_module_1 = require("../timetable/timetable.module");
+const subject_service_1 = require("../subject/subject.service");
+const subject_module_1 = require("../subject/subject.module");
+const teacher_module_1 = require("../teacher/teacher.module");
+const section_module_1 = require("../section/section.module");
+const teacher_service_1 = require("../teacher/teacher.service");
+const section_service_1 = require("../section/section.service");
+const course_module_1 = require("../course/course.module");
+const course_service_1 = require("../course/course.service");
 let HomeworkModule = class HomeworkModule {
 };
 exports.HomeworkModule = HomeworkModule;
 exports.HomeworkModule = HomeworkModule = __decorate([
     (0, common_1.Module)({
-        imports: [timetable_module_1.TimetableModule],
+        imports: [
+            timetable_module_1.TimetableModule,
+            subject_module_1.SubjectModule,
+            teacher_module_1.TeacherModule,
+            section_module_1.SectionModule,
+            course_module_1.CourseModule,
+        ],
         controllers: [homework_controller_1.HomeworkController],
-        providers: [homework_service_1.HomeworkService, timetable_service_1.TimetableService],
+        providers: [
+            homework_service_1.HomeworkService,
+            timetable_service_1.TimetableService,
+            subject_service_1.SubjectService,
+            teacher_service_1.TeacherService,
+            section_service_1.SectionService,
+            course_service_1.CourseService,
+        ],
     })
 ], HomeworkModule);
 //# sourceMappingURL=homework.module.js.map

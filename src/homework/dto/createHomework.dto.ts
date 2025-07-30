@@ -39,9 +39,9 @@ export class CreateHomeworkDto extends HomeworkEntity {
   @IsNotEmpty()
   status: boolean;
 
-  @IsNotEmpty()
-  @IsUUID()
-  studentId: string;
+  // @IsNotEmpty()
+  // @IsUUID()
+  // studentId: string;
 
   @IsNotEmpty()
   @IsUUID()

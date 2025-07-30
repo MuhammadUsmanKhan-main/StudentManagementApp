@@ -15,9 +15,13 @@ const prisma_service_1 = require("../prisma/prisma.service");
 const bcrypt_1 = require("../common/utils/bcrypt");
 const class_transformer_1 = require("class-transformer");
 const student_dto_1 = require("./dto/student.dto");
+const section_service_1 = require("../section/section.service");
+const course_service_1 = require("../course/course.service");
 let StudentService = class StudentService {
-    constructor(prismaService) {
+    constructor(prismaService, sectionService, courseService) {
         this.prismaService = prismaService;
+        this.sectionService = sectionService;
+        this.courseService = courseService;
     }
     async findByEmail(email) {
         const student = await this.prismaService.student.findUnique({
@@ -28,19 +32,35 @@ let StudentService = class StudentService {
                 course: {
                     select: {
                         grade: true,
-                    }
+                    },
                 },
                 section: {
                     select: {
-                        name: true
-                    }
-                }
-            }
+                        name: true,
+                    },
+                },
+            },
         });
         return student;
     }
     async createStudent(createStudentDto, adminId) {
         const studentExist = await this.findByEmail(createStudentDto.email);
+        const courseExist = await this.prismaService.course.findUnique({
+            where: {
+                id: createStudentDto.courseId,
+            },
+        });
+        if (!courseExist) {
+            throw new common_1.NotFoundException("Course not exist");
+        }
+        const sectionExist = await this.prismaService.section.findUnique({
+            where: {
+                id: createStudentDto.sectionId,
+            },
+        });
+        if (!sectionExist) {
+            throw new common_1.NotFoundException("Section not exist");
+        }
         console.log({ studentExist, createStudentDto });
         if (studentExist) {
             throw new common_1.ConflictException("Email already exists");
@@ -67,6 +87,8 @@ let StudentService = class StudentService {
 exports.StudentService = StudentService;
 exports.StudentService = StudentService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        section_service_1.SectionService,
+        course_service_1.CourseService])
 ], StudentService);
 //# sourceMappingURL=student.service.js.map

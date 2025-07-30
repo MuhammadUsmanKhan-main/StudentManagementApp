@@ -15,6 +15,7 @@ export declare class AttendanceController {
             status: import(".prisma/client").$Enums.AttendanceStatus;
             studentId: string;
             markedById: string;
+            subjectId: string;
             createdAt: Date;
             updatedAt: Date;
         }[];

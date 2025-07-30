@@ -12,9 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SubjectService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const course_service_1 = require("../course/course.service");
 let SubjectService = class SubjectService {
-    constructor(prismaService) {
+    constructor(prismaService, courseService) {
         this.prismaService = prismaService;
+        this.courseService = courseService;
     }
     async findSubject(code, courseId) {
         const Subject = await this.prismaService.subject.findUnique({
@@ -28,6 +30,14 @@ let SubjectService = class SubjectService {
         return Subject;
     }
     async createSubject(createSubjectDto) {
+        const courseExist = await this.prismaService.course.findUnique({
+            where: {
+                id: createSubjectDto.courseId
+            }
+        });
+        if (!courseExist) {
+            throw new common_1.NotFoundException('Course does not exist');
+        }
         const subjectExist = await this.findSubject(createSubjectDto.code, createSubjectDto.courseId);
         if (subjectExist) {
             throw new common_1.ConflictException("Subject already exists.");
@@ -56,6 +66,7 @@ let SubjectService = class SubjectService {
 exports.SubjectService = SubjectService;
 exports.SubjectService = SubjectService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        course_service_1.CourseService])
 ], SubjectService);
 //# sourceMappingURL=subject.service.js.map

@@ -13,10 +13,16 @@ exports.AttendanceService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const timetable_service_1 = require("../timetable/timetable.service");
+const teacher_service_1 = require("../teacher/teacher.service");
+const subject_service_1 = require("../subject/subject.service");
+const student_service_1 = require("../student/student.service");
 let AttendanceService = class AttendanceService {
-    constructor(prismaService, timeTableService) {
+    constructor(prismaService, timeTableService, teacherService, subjectService, studentService) {
         this.prismaService = prismaService;
         this.timeTableService = timeTableService;
+        this.teacherService = teacherService;
+        this.subjectService = subjectService;
+        this.studentService = studentService;
     }
     async getStudents(getStudentsDto) {
         const { courseId, sectionId } = getStudentsDto;
@@ -26,20 +32,16 @@ let AttendanceService = class AttendanceService {
                 sectionId,
             },
             select: {
-                id: true
-            }
+                id: true,
+            },
         });
         return students;
     }
     async createAttendance(createAttendanceDto) {
-        const { markedById, subjectId, students, date } = createAttendanceDto;
+        const { markedById, subjectId, students, date, sectionId } = createAttendanceDto;
         const startOfDay = new Date(date);
         const endOfDay = new Date(startOfDay);
         endOfDay.setDate(endOfDay.getDate() + 1);
-        const year = startOfDay.getFullYear();
-        const month = String(startOfDay.getMonth() + 1).padStart(2, "0");
-        const day = String(startOfDay.getDate()).padStart(2, "0");
-        const formattedDate = `${year}-${month}-${day}`;
         const dayName = startOfDay
             .toLocaleString("en-US", { weekday: "short" })
             .toUpperCase();
@@ -50,56 +52,61 @@ let AttendanceService = class AttendanceService {
             });
             if (!student)
                 throw new common_1.NotFoundException(`Student with ID ${studentId} not found`);
-            const subject = await this.prismaService.subject.findUnique({
-                where: { id: subjectId },
-                select: { courseId: true },
-            });
-            if (!subject)
-                throw new common_1.NotFoundException(`Subject not found`);
-            if (student.courseId !== subject.courseId) {
-                throw new common_1.NotFoundException(`Student ${studentId} is not in the course for this subject`);
-            }
-            const timetableSlot = await this.prismaService.timetable.findFirst({
-                where: {
-                    teacherId: markedById,
-                    subjectId,
-                    sectionId: student.sectionId,
-                    day: dayName,
-                },
-            });
-            if (!timetableSlot) {
-                throw new common_1.NotFoundException(`No valid timetable slot found for teacher and subject on ${dayName}`);
-            }
-            console.log("Parsed date:", startOfDay.toISOString());
-            console.log("Slot start:", timetableSlot.startTime.toISOString());
-            console.log("Slot end:", timetableSlot.endTime.toISOString());
-            const isInTimeSlot = startOfDay >= timetableSlot.startTime &&
-                startOfDay <= timetableSlot.endTime;
-            if (!isInTimeSlot) {
-                throw new common_1.NotFoundException(`Current time is not within the valid class period (${timetableSlot.startTime.toLocaleTimeString()} - ${timetableSlot.endTime.toLocaleTimeString()})`);
-            }
-            const existing = await this.prismaService.attendance.findFirst({
-                where: {
-                    date: {
-                        gte: startOfDay,
-                        lt: endOfDay,
-                    },
-                    studentId,
-                    markedById,
-                },
-            });
-            if (existing) {
-                throw new common_1.ConflictException(`Attendance already marked for student ${studentId} on ${formattedDate}`);
-            }
         }
-        const attendanceEntries = await Promise.all(students.map(({ studentId, status }) => this.prismaService.attendance.create({
-            data: {
-                date,
-                status,
-                studentId,
-                markedById,
+        const subjectExist = await this.prismaService.subject.findUnique({
+            where: {
+                id: subjectId,
             },
-        })));
+        });
+        if (!subjectExist) {
+            throw new common_1.NotFoundException("Subject not found");
+        }
+        const teacherExist = await this.prismaService.teacher.findUnique({
+            where: {
+                id: markedById,
+            },
+        });
+        if (!teacherExist) {
+            throw new common_1.NotFoundException("Teacher not found");
+        }
+        const timetableSlot = await this.prismaService.timetable.findFirst({
+            where: {
+                teacherId: markedById,
+                subjectId,
+                sectionId,
+                day: dayName,
+            },
+        });
+        if (!timetableSlot) {
+            throw new common_1.NotFoundException(`No valid timetable slot found for teacher and subject on ${dayName}`);
+        }
+        const isInTimeSlot = startOfDay >= timetableSlot.startTime &&
+            startOfDay <= timetableSlot.endTime;
+        if (!isInTimeSlot) {
+            throw new common_1.NotFoundException(`Current time is not within the valid class period (${timetableSlot.startTime.toLocaleTimeString()} - ${timetableSlot.endTime.toLocaleTimeString()})`);
+        }
+        const attendanceEntries = await Promise.all(students.map(({ studentId, status }) => {
+            return this.prismaService.attendance.upsert({
+                where: {
+                    studentId_date_subjectId_markedById: {
+                        date,
+                        markedById,
+                        studentId,
+                        subjectId,
+                    },
+                },
+                create: {
+                    date: startOfDay,
+                    status,
+                    markedById,
+                    studentId,
+                    subjectId,
+                },
+                update: {
+                    status,
+                },
+            });
+        }));
         return {
             message: "Attendance marked successfully",
             records: attendanceEntries,
@@ -110,6 +117,9 @@ exports.AttendanceService = AttendanceService;
 exports.AttendanceService = AttendanceService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        timetable_service_1.TimetableService])
+        timetable_service_1.TimetableService,
+        teacher_service_1.TeacherService,
+        subject_service_1.SubjectService,
+        student_service_1.StudentService])
 ], AttendanceService);
 //# sourceMappingURL=attendance.service.js.map

@@ -12,22 +12,32 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SectionService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const course_service_1 = require("../course/course.service");
 let SectionService = class SectionService {
-    constructor(prismaService) {
+    constructor(prismaService, courseService) {
         this.prismaService = prismaService;
+        this.courseService = courseService;
     }
     async findSection(name, courseId) {
         const section = await this.prismaService.section.findUnique({
             where: {
                 name_courseId: {
                     name,
-                    courseId
-                }
+                    courseId,
+                },
             },
         });
         return section;
     }
     async createSection(createSectionDto) {
+        const courseExist = await this.prismaService.course.findUnique({
+            where: {
+                id: createSectionDto.courseId,
+            },
+        });
+        if (!courseExist) {
+            throw new common_1.NotFoundException("Course does not exist");
+        }
         const sectionExist = await this.findSection(createSectionDto.name, createSectionDto.courseId);
         if (sectionExist) {
             throw new common_1.ConflictException("Section already exists.");
@@ -40,10 +50,10 @@ let SectionService = class SectionService {
             include: {
                 course: {
                     select: {
-                        grade: true
-                    }
-                }
-            }
+                        grade: true,
+                    },
+                },
+            },
         });
         const sectionCreated = {
             message: `Section ${section.name} of class ${section.course.grade} has been successfully created.`,
@@ -54,6 +64,7 @@ let SectionService = class SectionService {
 exports.SectionService = SectionService;
 exports.SectionService = SectionService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        course_service_1.CourseService])
 ], SectionService);
 //# sourceMappingURL=section.service.js.map

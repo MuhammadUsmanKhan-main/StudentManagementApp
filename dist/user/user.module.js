@@ -18,14 +18,33 @@ const teacher_module_1 = require("../teacher/teacher.module");
 const student_module_1 = require("../student/student.module");
 const admin_service_1 = require("../admin/admin.service");
 const admin_module_1 = require("../admin/admin.module");
+const section_module_1 = require("../section/section.module");
+const section_service_1 = require("../section/section.service");
+const course_module_1 = require("../course/course.module");
+const course_service_1 = require("../course/course.service");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
 exports.UserModule = UserModule = __decorate([
     (0, common_1.Module)({
-        imports: [admin_module_1.AdminModule, teacher_module_1.TeacherModule, student_module_1.StudentModule],
+        imports: [
+            admin_module_1.AdminModule,
+            teacher_module_1.TeacherModule,
+            student_module_1.StudentModule,
+            section_module_1.SectionModule,
+            course_module_1.CourseModule,
+        ],
         controllers: [user_controller_1.UserController],
-        providers: [user_service_1.UserService, admin_service_1.AdminService, teacher_service_1.TeacherService, student_service_1.StudentService, jwt_1.JwtService, mailer_service_1.MailerService],
+        providers: [
+            user_service_1.UserService,
+            admin_service_1.AdminService,
+            teacher_service_1.TeacherService,
+            student_service_1.StudentService,
+            section_service_1.SectionService,
+            course_service_1.CourseService,
+            jwt_1.JwtService,
+            mailer_service_1.MailerService,
+        ],
     })
 ], UserModule);
 //# sourceMappingURL=user.module.js.map
