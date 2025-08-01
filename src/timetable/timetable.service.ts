@@ -8,6 +8,7 @@ import { CreateTimetableDto } from "./dto/createTimetable.dto";
 import { TeacherService } from "src/teacher/teacher.service";
 import { SubjectService } from "src/subject/subject.service";
 import { SectionService } from "src/section/section.service";
+import { UpdateTimetableDto } from "./dto/updateTimetable.dto";
 // import { CreateSubjectDto } from "./dto/createSubject.dto";
 
 // import { CreateCourseDto } from "./dto/createCourse.dto";
@@ -15,10 +16,10 @@ import { SectionService } from "src/section/section.service";
 @Injectable()
 export class TimetableService {
   constructor(private readonly prismaService: PrismaService,
-    private readonly teacherService:TeacherService,
-    private readonly subjectService:SubjectService,
-    private readonly sectionService:SectionService
-  ) {}
+    private readonly teacherService: TeacherService,
+    private readonly subjectService: SubjectService,
+    private readonly sectionService: SectionService
+  ) { }
 
   async findTeachersTimetable(teacherId: string) {
     const teacherTimeTable = await this.prismaService.timetable.findMany({
@@ -188,4 +189,99 @@ export class TimetableService {
     };
     return timeTable;
   }
+
+  async findAll() {
+    return await this.prismaService.timetable.findMany({
+      include: {
+        teacher: {
+          select: { firstName: true, lastName: true },
+        },
+        subject: {
+          select: { name: true },
+        },
+        section: {
+          select: {
+            name: true,
+            course: { select: { grade: true } },
+          },
+        },
+      },
+    });
+  }
+
+  async findOne(id: string) {
+    const record = await this.prismaService.timetable.findUnique({
+      where: { id },
+      include: {
+        teacher: {
+          select: { firstName: true, lastName: true },
+        },
+        subject: {
+          select: { name: true },
+        },
+        section: {
+          select: {
+            name: true,
+            course: { select: { grade: true } },
+          },
+        },
+      },
+    });
+
+    if (!record) throw new NotFoundException('Timetable record not found');
+    return record;
+  }
+
+  async update(id: string, updateDto: UpdateTimetableDto) {
+    // Validate related foreign keys
+    if (updateDto.teacherId) {
+      const teacher = await this.prismaService.teacher.findUnique({
+        where: { id: updateDto.teacherId },
+      });
+      if (!teacher) throw new NotFoundException('Teacher not found');
+    }
+
+    if (updateDto.subjectId) {
+      const subject = await this.prismaService.subject.findUnique({
+        where: { id: updateDto.subjectId },
+      });
+      if (!subject) throw new NotFoundException('Subject not found');
+    }
+
+    if (updateDto.sectionId) {
+      const section = await this.prismaService.section.findUnique({
+        where: { id: updateDto.sectionId },
+      });
+      if (!section) throw new NotFoundException('Section not found');
+    }
+
+    const updated = await this.prismaService.timetable.update({
+      where: { id },
+      data: {
+        ...updateDto,
+        startTime: updateDto.startTime
+          ? new Date(updateDto.startTime)
+          : undefined,
+        endTime: updateDto.endTime ? new Date(updateDto.endTime) : undefined,
+      },
+    });
+
+    return {
+      ...updated,
+      message: 'Record updated successfully',
+    };
+  }
+
+  async delete(id: string) {
+    const exists = await this.prismaService.timetable.findUnique({
+      where: { id },
+    });
+
+    if (!exists) throw new NotFoundException('Timetable record not found');
+
+    await this.prismaService.timetable.delete({ where: { id } });
+
+    return { message: 'Record deleted successfully' };
+  }
+
 }

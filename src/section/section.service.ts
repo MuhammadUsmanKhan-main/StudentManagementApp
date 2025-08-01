@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
 import { plainToClass } from "class-transformer";
@@ -10,6 +11,7 @@ import { CreateSectionDto } from "./dto/createSection.dto";
 import { SectionDto } from "./dto/section.dto";
 import { Section } from "src/common/enums/section.enum";
 import { CourseService } from "src/course/course.service";
+import { UpdateSectionDto } from "./dto/updateSection.dto";
 // import { Section } from "src/common/enums/role.enum";
 
 @Injectable()
@@ -17,7 +19,7 @@ export class SectionService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly courseService: CourseService
-  ) {}
+  ) { }
 
   async findSection(name: Section, courseId: string) {
     const section = await this.prismaService.section.findUnique({
@@ -72,5 +74,99 @@ export class SectionService {
     };
 
     return sectionCreated;
+  }
+
+  async getAllSections() {
+    return await this.prismaService.section.findMany({
+      include: {
+        course: {
+          select: {
+            grade: true,
+          },
+        },
+      },
+    });
+  }
+
+  async getSectionById(id: string) {
+    const section = await this.prismaService.section.findUnique({
+      where: { id },
+      include: {
+        course: {
+          select: {
+            grade: true,
+          },
+        },
+      },
+    });
+
+    if (!section) {
+      throw new NotFoundException("Section not found");
+    }
+
+    return section;
+  }
+
+  async updateSection(id: string, updateSectionDto: UpdateSectionDto) {
+    const section = await this.prismaService.section.findUnique({
+      where: { id },
+    });
+
+    if (!section) {
+      throw new NotFoundException("Section not found");
+    }
+
+    if (
+      updateSectionDto.name &&
+      updateSectionDto.courseId &&
+      (updateSectionDto.name !== section.name ||
+        updateSectionDto.courseId !== section.courseId)
+    ) {
+      const existing = await this.findSection(
+        updateSectionDto.name,
+        updateSectionDto.courseId
+      );
+      if (existing) {
+        throw new ConflictException("Another section with same name exists in this course");
+      }
+    }
+
+    const updatedSection = await this.prismaService.section.update({
+      where: { id },
+      data: updateSectionDto,
+    });
+
+    return {
+      message: `Section ${updatedSection.name} updated successfully.`,
+    };
+  }
+
+  async deleteSection(id: string) {
+    const section = await this.prismaService.section.findUnique({
+      where: { id },
+    });
+
+    if (!section) {
+      throw new NotFoundException("Section not found");
+    }
+
+    try {
+      await this.prismaService.section.delete({
+        where: { id },
+      });
+
+      return {
+        message: `Section ${section.name} deleted successfully.`,
+      };
+
+    } catch (error) {
+
+      if (error.code === 'P2003') {
+        throw new ConflictException("Cannot delete section as it is associated with other records.");
+      }
+
+      // console.error("Section deletion failed:", error);
+      throw new InternalServerErrorException("An unexpected error occurred.");
+    }
   }
 }

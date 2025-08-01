@@ -36,14 +36,15 @@ import { StudentDto } from "./dto/student.dto";
 import { StudentSignUpDto } from "./dto/studentSignup.dto";
 import { SectionService } from "src/section/section.service";
 import { CourseService } from "src/course/course.service";
+import { UpdateStudentDto } from "./dto/updateStudent.dto";
 // import { SignUpAdminDto } from "./dto/signup-admin.dto";
 
 @Injectable()
 export class StudentService {
   constructor(private readonly prismaService: PrismaService,
-    private readonly sectionService:SectionService,
-    private readonly courseService:CourseService
-  ) {}
+    private readonly sectionService: SectionService,
+    private readonly courseService: CourseService
+  ) { }
 
   async findByEmail(email: string) {
     const student = await this.prismaService.student.findUnique({
@@ -118,4 +119,91 @@ export class StudentService {
 
     return studentDto;
   }
+
+
+  async getAllStudents() {
+    return await this.prismaService.student.findMany({
+      include: {
+        course: true,
+        section: true,
+      },
+    });
+  }
+
+  async getStudentById(id: string) {
+    const student = await this.prismaService.student.findUnique({
+      where: { id },
+      include: {
+        course: true,
+        section: true,
+      },
+    });
+
+    if (!student) {
+      throw new NotFoundException("Student not found");
+    }
+
+    return student;
+  }
+
+  async updateStudent(id: string, dto: UpdateStudentDto) {
+    const student = await this.prismaService.student.findUnique({ where: { id } });
+
+    if (!student) {
+      throw new NotFoundException("Student not found");
+    }
+
+    if (dto.email && dto.email !== student.email) {
+      const exists = await this.prismaService.student.findUnique({
+        where: { email: dto.email },
+      });
+
+      if (exists) {
+        throw new ConflictException("Email already in use by another student");
+      }
+    }
+
+    if (dto.courseId) {
+      const course = await this.prismaService.course.findUnique({
+        where: { id: dto.courseId },
+      });
+      if (!course) throw new NotFoundException("Course does not exist");
+    }
+
+    if (dto.sectionId) {
+      const section = await this.prismaService.section.findUnique({
+        where: { id: dto.sectionId },
+      });
+      if (!section) throw new NotFoundException("Section does not exist");
+    }
+
+    const updatedStudent = await this.prismaService.student.update({
+      where: { id },
+      data: {
+        ...dto,
+        password: dto.password
+          ? await encryptPassword(dto.password)
+          : student.password,
+      },
+    });
+
+    return {
+      message: `Student ${updatedStudent.firstName} updated successfully`,
+    };
+  }
+
+  async deleteStudent(id: string) {
+    const student = await this.prismaService.student.findUnique({ where: { id } });
+
+    if (!student) {
+      throw new NotFoundException("Student not found");
+    }
+
+    await this.prismaService.student.delete({ where: { id } });
+
+    return {
+      message: `Student ${student.firstName} ${student.lastName} deleted successfully.`,
+    };
+  }
+
 }
