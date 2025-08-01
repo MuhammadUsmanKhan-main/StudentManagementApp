@@ -33,11 +33,12 @@ import { JwtService } from "@nestjs/jwt";
 import { MailerService } from "src/mailer/mailer.service";
 import { CreateTeacherDto } from "./dto/createTeacher.dto";
 import { TeacherDto } from "./dto/teacher.dto";
+import { UpdateTeacherDto } from "./dto/updateTeacher.dto";
 // import { SignUpAdminDto } from "./dto/signup-admin.dto";
 
 @Injectable()
 export class TeacherService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   async findByEmail(email: string) {
     const teacher = await this.prismaService.teacher.findUnique({
@@ -48,11 +49,11 @@ export class TeacherService {
     return teacher;
   }
 
-  async createTeacher(createTeacherDto: CreateTeacherDto, adminId:string) {
+  async createTeacher(createTeacherDto: CreateTeacherDto, adminId: string) {
     // check teacher exist
     const teacherExist = await this.findByEmail(createTeacherDto.email);
 
-console.log({teacherExist, createTeacherDto})
+    console.log({ teacherExist, createTeacherDto })
 
     if (teacherExist) {
       throw new ConflictException("Email already exists");
@@ -64,7 +65,7 @@ console.log({teacherExist, createTeacherDto})
         lastName: createTeacherDto.lastName,
         phone: createTeacherDto.phone,
         email: createTeacherDto.email,
-        password: await encryptPassword(createTeacherDto.password) ,
+        password: await encryptPassword(createTeacherDto.password),
         adminId,
       },
     });
@@ -76,5 +77,36 @@ console.log({teacherExist, createTeacherDto})
     // TODO Otp send email
 
     return teacherDto;
+  }
+
+
+  async findAll() {
+    return await this.prismaService.teacher.findMany();
+  }
+
+  async findOne(id: string) {
+    return await this.prismaService.teacher.findUnique({
+      where: { id },
+    });
+  }
+
+  async update(id: string, updateTeacherDto: UpdateTeacherDto) {
+    const updated = await this.prismaService.teacher.update({
+      where: { id },
+      data: {
+        ...updateTeacherDto,
+        password: updateTeacherDto.password
+          ? await encryptPassword(updateTeacherDto.password)
+          : undefined,
+      },
+    });
+
+    return plainToClass(TeacherDto, updated);
+  }
+
+  async remove(id: string) {
+    return await this.prismaService.teacher.delete({
+      where: { id },
+    });
   }
 }

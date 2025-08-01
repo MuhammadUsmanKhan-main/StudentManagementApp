@@ -23,6 +23,7 @@ import { RolesGuard } from "src/auth/guard/role.guard";
 import { Role } from "src/common/enums/role.enum";
 import { SectionService } from "./section.service";
 import { CreateSectionDto } from "./dto/createSection.dto";
+import { UpdateSectionDto } from "./dto/updateSection.dto";
 // import { CourseService } from "./course.service";
 // import { CreateCourseDto } from "./dto/createCourse.dto";
 // import { TeacherService } from "./teacher.service";
@@ -34,7 +35,7 @@ import { CreateSectionDto } from "./dto/createSection.dto";
 @Roles(Role.Admin)
 @Controller("admin")
 export class SectionController {
-  constructor(private readonly sectionService: SectionService) {}
+  constructor(private readonly sectionService: SectionService) { }
 
   @Version("1")
   @Post("createSection")
@@ -44,4 +45,37 @@ export class SectionController {
   createSection(@Body() createSectionDto: CreateSectionDto) {
     return this.sectionService.createSection(createSectionDto);
   }
+
+  @Version("1")
+  @Get("getAllSections")
+  @HttpCode(200)
+  getAllSections() {
+    return this.sectionService.getAllSections();
+  }
+
+  @Version("1")
+  @Get("getSection/:id")
+  @HttpCode(200)
+  getSection(@Param("id") id: string) {
+    return this.sectionService.getSectionById(id);
+  }
+
+  @Version("1")
+  @Patch("updateSection/:id")
+  @HttpCode(200)
+  @UsePipes(ValidationPipe)
+  updateSection(
+    @Param("id") id: string,
+    @Body() updateSectionDto: UpdateSectionDto
+  ) {
+    return this.sectionService.updateSection(id, updateSectionDto);
+  }
+
+  @Version("1")
+  @Delete("deleteSection/:id")
+  @HttpCode(200)
+  deleteSection(@Param("id") id: string) {
+    return this.sectionService.deleteSection(id);
+  }
+
 }

@@ -14,6 +14,7 @@ import {
   Res,
   Version,
   Request,
+  Put,
 } from "@nestjs/common";
 // import { AdminService } from './admin.service';
 // import { StudentService } from './student.service';
@@ -23,6 +24,7 @@ import { RolesGuard } from "src/auth/guard/role.guard";
 import { Role } from "src/common/enums/role.enum";
 import { SubjectService } from "./subject.service";
 import { CreateSubjectDto } from "./dto/createSubject.dto";
+import { UpdateSubjectDto } from "./dto/updateSubject.dto";
 // import { CourseService } from "./course.service";
 // import { CreateCourseDto } from "./dto/createCourse.dto";
 // import { TeacherService } from "./teacher.service";
@@ -34,7 +36,7 @@ import { CreateSubjectDto } from "./dto/createSubject.dto";
 @Roles(Role.Admin)
 @Controller("admin")
 export class SubjectController {
-  constructor(private readonly subjectService: SubjectService) {}
+  constructor(private readonly subjectService: SubjectService) { }
 
   @Version("1")
   @Post("createSubject")
@@ -44,4 +46,33 @@ export class SubjectController {
   createCourse(@Body() createSubjectDto: CreateSubjectDto) {
     return this.subjectService.createSubject(createSubjectDto);
   }
+
+  @Version("1")
+  @Get("subjects")
+  getAllSubjects() {
+    return this.subjectService.getAllSubjects();
+  }
+
+  @Version("1")
+  @Get("subject/:id")
+  getSubjectById(@Param("id") id: string) {
+    return this.subjectService.getSubjectById(id);
+  }
+
+  @Version("1")
+  @Put("subject/:id")
+  @UsePipes(ValidationPipe)
+  updateSubject(
+    @Param("id") id: string,
+    @Body() updateSubjectDto: UpdateSubjectDto
+  ) {
+    return this.subjectService.updateSubject(id, updateSubjectDto);
+  }
+
+  @Version("1")
+  @Delete("subject/:id")
+  deleteSubject(@Param("id") id: string) {
+    return this.subjectService.deleteSubject(id);
+  }
+
 }

@@ -41,6 +41,31 @@ let CourseService = class CourseService {
         };
         return courseCreated;
     }
+    async getAllCourses() {
+        return this.prismaService.course.findMany();
+    }
+    async getCourseById(id) {
+        const course = await this.prismaService.course.findUnique({ where: { id } });
+        if (!course)
+            throw new common_1.NotFoundException("Course not found");
+        return course;
+    }
+    async updateCourse(id, dto) {
+        const course = await this.prismaService.course.findUnique({ where: { id } });
+        if (!course)
+            throw new common_1.NotFoundException("Course not found");
+        return this.prismaService.course.update({
+            where: { id },
+            data: dto,
+        });
+    }
+    async deleteCourse(id) {
+        const course = await this.prismaService.course.findUnique({ where: { id } });
+        if (!course)
+            throw new common_1.NotFoundException("Course not found");
+        await this.prismaService.course.delete({ where: { id } });
+        return { message: "Course deleted successfully" };
+    }
 };
 exports.CourseService = CourseService;
 exports.CourseService = CourseService = __decorate([

@@ -48,6 +48,31 @@ let TeacherService = class TeacherService {
         });
         return teacherDto;
     }
+    async findAll() {
+        return await this.prismaService.teacher.findMany();
+    }
+    async findOne(id) {
+        return await this.prismaService.teacher.findUnique({
+            where: { id },
+        });
+    }
+    async update(id, updateTeacherDto) {
+        const updated = await this.prismaService.teacher.update({
+            where: { id },
+            data: {
+                ...updateTeacherDto,
+                password: updateTeacherDto.password
+                    ? await (0, bcrypt_1.encryptPassword)(updateTeacherDto.password)
+                    : undefined,
+            },
+        });
+        return (0, class_transformer_1.plainToClass)(teacher_dto_1.TeacherDto, updated);
+    }
+    async remove(id) {
+        return await this.prismaService.teacher.delete({
+            where: { id },
+        });
+    }
 };
 exports.TeacherService = TeacherService;
 exports.TeacherService = TeacherService = __decorate([

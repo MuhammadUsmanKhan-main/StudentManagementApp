@@ -20,12 +20,25 @@ const role_guard_1 = require("../auth/guard/role.guard");
 const role_enum_1 = require("../common/enums/role.enum");
 const section_service_1 = require("./section.service");
 const createSection_dto_1 = require("./dto/createSection.dto");
+const updateSection_dto_1 = require("./dto/updateSection.dto");
 let SectionController = class SectionController {
     constructor(sectionService) {
         this.sectionService = sectionService;
     }
     createSection(createSectionDto) {
         return this.sectionService.createSection(createSectionDto);
+    }
+    getAllSections() {
+        return this.sectionService.getAllSections();
+    }
+    getSection(id) {
+        return this.sectionService.getSectionById(id);
+    }
+    updateSection(id, updateSectionDto) {
+        return this.sectionService.updateSection(id, updateSectionDto);
+    }
+    deleteSection(id) {
+        return this.sectionService.deleteSection(id);
     }
 };
 exports.SectionController = SectionController;
@@ -39,6 +52,43 @@ __decorate([
     __metadata("design:paramtypes", [createSection_dto_1.CreateSectionDto]),
     __metadata("design:returntype", void 0)
 ], SectionController.prototype, "createSection", null);
+__decorate([
+    (0, common_1.Version)("1"),
+    (0, common_1.Get)("getAllSections"),
+    (0, common_1.HttpCode)(200),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], SectionController.prototype, "getAllSections", null);
+__decorate([
+    (0, common_1.Version)("1"),
+    (0, common_1.Get)("getSection/:id"),
+    (0, common_1.HttpCode)(200),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], SectionController.prototype, "getSection", null);
+__decorate([
+    (0, common_1.Version)("1"),
+    (0, common_1.Patch)("updateSection/:id"),
+    (0, common_1.HttpCode)(200),
+    (0, common_1.UsePipes)(common_1.ValidationPipe),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, updateSection_dto_1.UpdateSectionDto]),
+    __metadata("design:returntype", void 0)
+], SectionController.prototype, "updateSection", null);
+__decorate([
+    (0, common_1.Version)("1"),
+    (0, common_1.Delete)("deleteSection/:id"),
+    (0, common_1.HttpCode)(200),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], SectionController.prototype, "deleteSection", null);
 exports.SectionController = SectionController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), role_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),

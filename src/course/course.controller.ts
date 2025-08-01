@@ -23,6 +23,7 @@ import { RolesGuard } from "src/auth/guard/role.guard";
 import { Role } from "src/common/enums/role.enum";
 import { CourseService } from "./course.service";
 import { CreateCourseDto } from "./dto/createCourse.dto";
+import { UpdateCourseDto } from "./dto/updateCourse.dto";
 // import { TeacherService } from "./teacher.service";
 // import { CreateTeacherDto } from "./dto/createTeacher.dto";
 // import { UserService } from './user.service';
@@ -32,7 +33,7 @@ import { CreateCourseDto } from "./dto/createCourse.dto";
 @Roles(Role.Admin)
 @Controller("admin")
 export class CourseController {
-  constructor(private readonly courseService: CourseService) {}
+  constructor(private readonly courseService: CourseService) { }
 
   @Version("1")
   @Post("createCourse")
@@ -42,4 +43,34 @@ export class CourseController {
   createCourse(@Body() createCourseDto: CreateCourseDto) {
     return this.courseService.createCourse(createCourseDto);
   }
+
+
+  @Version("1")
+  @Get()
+  getAllCourses() {
+    return this.courseService.getAllCourses();
+  }
+
+  @Version("1")
+  @Get(':id')
+  getCourseById(@Param('id') id: string) {
+    return this.courseService.getCourseById(id);
+  }
+
+  @Version("1")
+  @Patch(':id')
+  updateCourse(
+    @Param('id') id: string,
+    @Body() updateCourseDto: UpdateCourseDto,
+  ) {
+    return this.courseService.updateCourse(id, updateCourseDto);
+  }
+
+  @Version("1")
+  @Delete(':id')
+  deleteCourse(@Param('id') id: string) {
+    return this.courseService.deleteCourse(id);
+  }
+
+
 }
