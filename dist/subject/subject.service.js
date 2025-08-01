@@ -62,6 +62,77 @@ let SubjectService = class SubjectService {
         };
         return subjectCreated;
     }
+    async getAllSubjects() {
+        return this.prismaService.subject.findMany({
+            include: {
+                course: {
+                    select: {
+                        grade: true,
+                    },
+                },
+            },
+        });
+    }
+    async getSubjectById(id) {
+        const subject = await this.prismaService.subject.findUnique({
+            where: { id },
+            include: {
+                course: {
+                    select: {
+                        grade: true,
+                    },
+                },
+            },
+        });
+        if (!subject) {
+            throw new common_1.NotFoundException("Subject not found.");
+        }
+        return subject;
+    }
+    async updateSubject(id, dto) {
+        const subject = await this.prismaService.subject.findUnique({
+            where: { id },
+        });
+        if (!subject) {
+            throw new common_1.NotFoundException("Subject not found.");
+        }
+        if ((dto.code && dto.code !== subject.code) || (dto.courseId && dto.courseId !== subject.courseId)) {
+            const duplicate = await this.prismaService.subject.findFirst({
+                where: {
+                    code: dto.code || subject.code,
+                    courseId: dto.courseId || subject.courseId,
+                    NOT: { id },
+                },
+            });
+            console.log("Duplicate subject check:", duplicate);
+            if (duplicate) {
+                throw new common_1.ConflictException("Another subject with the same code already exists in this course.");
+            }
+        }
+        const updated = await this.prismaService.subject.update({
+            where: { id },
+            data: {
+                name: dto.name,
+                code: dto.code,
+                courseId: dto.courseId,
+            },
+        });
+        return {
+            message: `Subject ${updated.name} updated successfully.`,
+        };
+    }
+    async deleteSubject(id) {
+        const subject = await this.prismaService.subject.findUnique({
+            where: { id },
+        });
+        if (!subject) {
+            throw new common_1.NotFoundException("Subject not found.");
+        }
+        await this.prismaService.subject.delete({ where: { id } });
+        return {
+            message: `Subject ${subject.name} deleted successfully.`,
+        };
+    }
 };
 exports.SubjectService = SubjectService;
 exports.SubjectService = SubjectService = __decorate([

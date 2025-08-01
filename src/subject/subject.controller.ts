@@ -48,19 +48,19 @@ export class SubjectController {
   }
 
   @Version("1")
-  @Get("subjects")
+  @Get("getAllSubjects")
   getAllSubjects() {
     return this.subjectService.getAllSubjects();
   }
 
   @Version("1")
-  @Get("subject/:id")
+  @Get("getSubjectById/:id")
   getSubjectById(@Param("id") id: string) {
     return this.subjectService.getSubjectById(id);
   }
 
   @Version("1")
-  @Put("subject/:id")
+  @Put("updateSubject/:id")
   @UsePipes(ValidationPipe)
   updateSubject(
     @Param("id") id: string,
@@ -70,7 +70,7 @@ export class SubjectController {
   }
 
   @Version("1")
-  @Delete("subject/:id")
+  @Delete("deleteSubject/:id")
   deleteSubject(@Param("id") id: string) {
     return this.subjectService.deleteSubject(id);
   }

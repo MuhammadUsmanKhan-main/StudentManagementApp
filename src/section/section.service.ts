@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
 import { plainToClass } from "class-transformer";
@@ -149,13 +150,23 @@ export class SectionService {
       throw new NotFoundException("Section not found");
     }
 
-    await this.prismaService.section.delete({
-      where: { id },
-    });
+    try {
+      await this.prismaService.section.delete({
+        where: { id },
+      });
 
-    return {
-      message: `Section ${section.name} deleted successfully.`,
-    };
+      return {
+        message: `Section ${section.name} deleted successfully.`,
+      };
+
+    } catch (error) {
+
+      if (error.code === 'P2003') {
+        throw new ConflictException("Cannot delete section as it is associated with other records.");
+      }
+
+      // console.error("Section deletion failed:", error);
+      throw new InternalServerErrorException("An unexpected error occurred.");
+    }
   }
-
 }

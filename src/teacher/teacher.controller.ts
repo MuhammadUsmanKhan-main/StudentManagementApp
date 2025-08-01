@@ -34,25 +34,4 @@ import { UpdateTeacherDto } from "./dto/updateTeacher.dto";
 export class TeacherController {
   constructor(private readonly teacherService: TeacherService) { }
 
-  @Get()
-  async getAll() {
-    return await this.teacherService.findAll();
   }
-
-  @Get(':id')
-  async getOne(@Param('id') id: string) {
-    const teacher = await this.teacherService.findOne(id);
-    if (!teacher) throw new NotFoundException('Teacher not found');
-    return teacher;
-  }
-
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateDto: UpdateTeacherDto) {
-    return await this.teacherService.update(id, updateDto);
-  }
-
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return await this.teacherService.remove(id);
-  }
-}

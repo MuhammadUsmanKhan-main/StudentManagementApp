@@ -14,6 +14,7 @@ import {
   Res,
   Version,
   Request,
+  Put,
 } from "@nestjs/common";
 // import { AdminService } from './admin.service';
 // import { StudentService } from './student.service';
@@ -54,14 +55,14 @@ export class SectionController {
   }
 
   @Version("1")
-  @Get("getSection/:id")
+  @Get("getSectionById/:id")
   @HttpCode(200)
   getSection(@Param("id") id: string) {
     return this.sectionService.getSectionById(id);
   }
 
   @Version("1")
-  @Patch("updateSection/:id")
+  @Put("updateSection/:id")
   @HttpCode(200)
   @UsePipes(ValidationPipe)
   updateSection(

@@ -105,8 +105,24 @@ export class TeacherService {
   }
 
   async remove(id: string) {
-    return await this.prismaService.teacher.delete({
-      where: { id },
-    });
+    // Check if the teacher exists
+    const teacher = await this.findOne(id);
+    if (!teacher) {
+      throw new NotFoundException("Teacher not found");
+    }
+    // Attempt to delete the teacher
+    try {
+      await this.prismaService.teacher.delete({
+        where: { id },
+      });
+    } catch (error) {
+
+      // Handle specific error codes if needed
+      if (error.code === 'P2003') {
+        throw new ConflictException("Cannot delete teacher as it is associated with other records.");
+      }
+
+      throw new BadRequestException("Failed to delete teacher");
+    }
   }
 }

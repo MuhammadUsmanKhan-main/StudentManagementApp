@@ -14,6 +14,7 @@ import {
   Res,
   Version,
   Request,
+  Put,
 } from "@nestjs/common";
 // import { AdminService } from './admin.service';
 // import { StudentService } from './student.service';
@@ -46,19 +47,19 @@ export class CourseController {
 
 
   @Version("1")
-  @Get()
+  @Get("getAllCourses")
   getAllCourses() {
     return this.courseService.getAllCourses();
   }
 
   @Version("1")
-  @Get(':id')
+  @Get('getCourseById/:id')
   getCourseById(@Param('id') id: string) {
     return this.courseService.getCourseById(id);
   }
 
   @Version("1")
-  @Patch(':id')
+  @Put('updateCourse/:id')
   updateCourse(
     @Param('id') id: string,
     @Body() updateCourseDto: UpdateCourseDto,
@@ -67,7 +68,7 @@ export class CourseController {
   }
 
   @Version("1")
-  @Delete(':id')
+  @Delete('deleteCourse/:id')
   deleteCourse(@Param('id') id: string) {
     return this.courseService.deleteCourse(id);
   }

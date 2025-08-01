@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Body,
   Patch,
   Param,
@@ -49,19 +50,19 @@ export class TimetableController {
   }
 
   @Version('1')
-  @Get()
+  @Get("getTeachersTimetable")
   getAll() {
     return this.timetableService.findAll();
   }
 
   @Version('1')
-  @Get(':id')
+  @Get('getTimetableById/:id')
   getOne(@Param('id') id: string) {
     return this.timetableService.findOne(id);
   }
 
   @Version('1')
-  @Patch(':id')
+  @Put('updateTimetable/:id')
   @UsePipes(ValidationPipe)
   update(
     @Param('id') id: string,
@@ -71,7 +72,7 @@ export class TimetableController {
   }
 
   @Version('1')
-  @Delete(':id')
+  @Delete('deleteTimetable/:id')
   @HttpCode(204)
   delete(@Param('id') id: string) {
     return this.timetableService.delete(id);

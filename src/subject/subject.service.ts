@@ -112,6 +112,22 @@ export class SubjectService {
       throw new NotFoundException("Subject not found.");
     }
 
+    if ((dto.code && dto.code !== subject.code) || (dto.courseId && dto.courseId !== subject.courseId)) {
+      const duplicate = await this.prismaService.subject.findFirst({
+        where: {
+          code: dto.code || subject.code,
+          courseId: dto.courseId || subject.courseId,
+          NOT: { id }, 
+        },
+      });
+
+      console.log("Duplicate subject check:", duplicate);
+
+      if (duplicate) {
+        throw new ConflictException("Another subject with the same code already exists in this course.");
+      }
+    }
+
     const updated = await this.prismaService.subject.update({
       where: { id },
       data: {
@@ -125,6 +141,8 @@ export class SubjectService {
       message: `Subject ${updated.name} updated successfully.`,
     };
   }
+
+
 
   async deleteSubject(id: string) {
     const subject = await this.prismaService.subject.findUnique({

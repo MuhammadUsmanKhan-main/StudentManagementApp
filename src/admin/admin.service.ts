@@ -123,6 +123,7 @@ export class AdminService {
         firstName: dto.firstName,
         lastName: dto.lastName,
         phone: dto.phone,
+        email: dto.email,
         ...(dto.password && {
           password: await encryptPassword(dto.password),
         }),
