@@ -48,43 +48,6 @@ let TeacherService = class TeacherService {
         });
         return teacherDto;
     }
-    async findAll() {
-        return await this.prismaService.teacher.findMany();
-    }
-    async findOne(id) {
-        return await this.prismaService.teacher.findUnique({
-            where: { id },
-        });
-    }
-    async update(id, updateTeacherDto) {
-        const updated = await this.prismaService.teacher.update({
-            where: { id },
-            data: {
-                ...updateTeacherDto,
-                password: updateTeacherDto.password
-                    ? await (0, bcrypt_1.encryptPassword)(updateTeacherDto.password)
-                    : undefined,
-            },
-        });
-        return (0, class_transformer_1.plainToClass)(teacher_dto_1.TeacherDto, updated);
-    }
-    async remove(id) {
-        const teacher = await this.findOne(id);
-        if (!teacher) {
-            throw new common_1.NotFoundException("Teacher not found");
-        }
-        try {
-            await this.prismaService.teacher.delete({
-                where: { id },
-            });
-        }
-        catch (error) {
-            if (error.code === 'P2003') {
-                throw new common_1.ConflictException("Cannot delete teacher as it is associated with other records.");
-            }
-            throw new common_1.BadRequestException("Failed to delete teacher");
-        }
-    }
 };
 exports.TeacherService = TeacherService;
 exports.TeacherService = TeacherService = __decorate([

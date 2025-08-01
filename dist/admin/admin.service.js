@@ -58,48 +58,6 @@ let AdminService = class AdminService {
         });
         return admin;
     }
-    async updateAdmin(id, dto) {
-        const admin = await this.prismaService.admin.findUnique({
-            where: { id },
-        });
-        if (!admin) {
-            throw new common_1.NotFoundException(`Admin with ID ${id} not found`);
-        }
-        const updated = await this.prismaService.admin.update({
-            where: { id },
-            data: {
-                firstName: dto.firstName,
-                lastName: dto.lastName,
-                phone: dto.phone,
-                email: dto.email,
-                ...(dto.password && {
-                    password: await (0, bcrypt_1.encryptPassword)(dto.password),
-                }),
-            },
-        });
-        return (0, class_transformer_1.plainToClass)(admin_dto_1.AdminDto, updated);
-    }
-    async deleteAdmin(id) {
-        const admin = await this.prismaService.admin.findUnique({ where: { id } });
-        if (!admin) {
-            throw new common_1.NotFoundException(`Admin with ID ${id} not found`);
-        }
-        await this.prismaService.admin.delete({ where: { id } });
-        return { message: 'Admin deleted successfully' };
-    }
-    async getAllAdmins() {
-        const admins = await this.prismaService.admin.findMany();
-        return admins.map((admin) => (0, class_transformer_1.plainToClass)(admin_dto_1.AdminDto, { ...admin }));
-    }
-    async getAdminById(id) {
-        const admin = await this.prismaService.admin.findUnique({
-            where: { id },
-        });
-        if (!admin) {
-            throw new common_1.NotFoundException(`Admin with ID ${id} not found`);
-        }
-        return (0, class_transformer_1.plainToClass)(admin_dto_1.AdminDto, { ...admin });
-    }
 };
 exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([

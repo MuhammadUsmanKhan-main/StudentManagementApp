@@ -3,7 +3,6 @@ import { CreateTimetableDto } from "./dto/createTimetable.dto";
 import { TeacherService } from "src/teacher/teacher.service";
 import { SubjectService } from "src/subject/subject.service";
 import { SectionService } from "src/section/section.service";
-import { UpdateTimetableDto } from "./dto/updateTimetable.dto";
 export declare class TimetableService {
     private readonly prismaService;
     private readonly teacherService;
@@ -95,73 +94,5 @@ export declare class TimetableService {
         sectionId: string;
         createdAt: Date;
         updatedAt: Date;
-    }>;
-    findAll(): Promise<({
-        teacher: {
-            firstName: string;
-            lastName: string;
-        };
-        section: {
-            name: import(".prisma/client").$Enums.section;
-            course: {
-                grade: number;
-            };
-        };
-        subject: {
-            name: string;
-        };
-    } & {
-        id: string;
-        day: import(".prisma/client").$Enums.WeekDays;
-        period: string;
-        startTime: Date;
-        endTime: Date;
-        teacherId: string;
-        subjectId: string;
-        sectionId: string;
-        createdAt: Date;
-        updatedAt: Date;
-    })[]>;
-    findOne(id: string): Promise<{
-        teacher: {
-            firstName: string;
-            lastName: string;
-        };
-        section: {
-            name: import(".prisma/client").$Enums.section;
-            course: {
-                grade: number;
-            };
-        };
-        subject: {
-            name: string;
-        };
-    } & {
-        id: string;
-        day: import(".prisma/client").$Enums.WeekDays;
-        period: string;
-        startTime: Date;
-        endTime: Date;
-        teacherId: string;
-        subjectId: string;
-        sectionId: string;
-        createdAt: Date;
-        updatedAt: Date;
-    }>;
-    update(id: string, updateDto: UpdateTimetableDto): Promise<{
-        message: string;
-        id: string;
-        day: import(".prisma/client").$Enums.WeekDays;
-        period: string;
-        startTime: Date;
-        endTime: Date;
-        teacherId: string;
-        subjectId: string;
-        sectionId: string;
-        createdAt: Date;
-        updatedAt: Date;
-    }>;
-    delete(id: string): Promise<{
-        message: string;
     }>;
 }
