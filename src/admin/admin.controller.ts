@@ -14,6 +14,7 @@ import {
   Res,
   HttpCode,
   Request,
+  Put,
 } from "@nestjs/common";
 import { AdminService } from "./admin.service";
 import { AuthGuard } from "@nestjs/passport";
@@ -27,6 +28,7 @@ import { StudentService } from "src/student/student.service";
 import { CreateTeacherDto } from "src/teacher/dto/createTeacher.dto";
 import { TeacherService } from "src/teacher/teacher.service";
 import { Public } from "src/auth/decorator/public.decorator";
+import { UpdateAdminDto } from "./dto/updateAdmin.dto";
 // import { UserService } from './user.service';
 // import { SignUpUserDto } from './dto/signup-user.dto';
 // import { SignInUserDto } from './dto/signin-user.dto';
@@ -83,6 +85,25 @@ export class AdminController {
     return this.teacherService.createTeacher(createTeacherDto, adminId);
   }
 
+  @Get()
+  getAll() {
+    return this.adminService.getAllAdmins();
+  }
+
+  @Get(':id')
+  getById(@Param('id') id: string) {
+    return this.adminService.getAdminById(id);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() dto: UpdateAdminDto) {
+    return this.adminService.updateAdmin(id, dto);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.adminService.deleteAdmin(id);
+  }
 
   
 }

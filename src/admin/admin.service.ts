@@ -32,6 +32,7 @@ import { JwtService } from "@nestjs/jwt";
 // import { ForgetPasswordUserDto } from './dto/forgetpassword-user.dto.';
 // import { MailerService } from "src/mailer/mailer.service";
 import { SignUpAdminDto } from "./dto/signup-admin.dto";
+import { UpdateAdminDto } from "./dto/updateAdmin.dto";
 // import { TeacherService } from "src/teacher/teacher.service";
 // import { StudentService } from "src/student/student.service";
 
@@ -43,9 +44,9 @@ export class AdminService {
     // private readonly studentService: StudentService,
     private readonly jwtService: JwtService
     // private readonly mailerService: MailerService
-  ) {}
+  ) { }
 
-//<=============================================Apis Related To Admin===========================================>
+  //<=============================================Apis Related To Admin===========================================>
 
   //create Admin
   async createAdmin(
@@ -106,10 +107,66 @@ export class AdminService {
     return admin;
   }
 
+
+  async updateAdmin(id: string, dto: UpdateAdminDto): Promise<AdminDto> {
+    const admin = await this.prismaService.admin.findUnique({
+      where: { id },
+    });
+
+    if (!admin) {
+      throw new NotFoundException(`Admin with ID ${id} not found`);
+    }
+
+    const updated = await this.prismaService.admin.update({
+      where: { id },
+      data: {
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        phone: dto.phone,
+        ...(dto.password && {
+          password: await encryptPassword(dto.password),
+        }),
+      },
+    });
+
+    return plainToClass(AdminDto, updated);
+  }
+
+  async deleteAdmin(id: string): Promise<{ message: string }> {
+    const admin = await this.prismaService.admin.findUnique({ where: { id } });
+
+    if (!admin) {
+      throw new NotFoundException(`Admin with ID ${id} not found`);
+    }
+
+    await this.prismaService.admin.delete({ where: { id } });
+
+    return { message: 'Admin deleted successfully' };
+  }
+
   //update Admin
 
   //delete Admin
 
+  async getAllAdmins(): Promise<AdminDto[]> {
+    const admins = await this.prismaService.admin.findMany();
+
+    return admins.map((admin) =>
+      plainToClass(AdminDto, { ...admin })
+    );
+  }
+
+  async getAdminById(id: string): Promise<AdminDto> {
+    const admin = await this.prismaService.admin.findUnique({
+      where: { id },
+    });
+
+    if (!admin) {
+      throw new NotFoundException(`Admin with ID ${id} not found`);
+    }
+
+    return plainToClass(AdminDto, { ...admin });
+  }
 
 
 
