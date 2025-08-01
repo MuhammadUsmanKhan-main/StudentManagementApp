@@ -1,0 +1,1 @@
+//# sourceMappingURL=prisma.type.js.map
