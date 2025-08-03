@@ -14,6 +14,7 @@ import {
   Res,
   Version,
   Request,
+  NotFoundException,
 } from "@nestjs/common";
 // import { AdminService } from './admin.service';
 // import { StudentService } from './student.service';
@@ -23,6 +24,7 @@ import { RolesGuard } from "src/auth/guard/role.guard";
 import { Role } from "src/common/enums/role.enum";
 import { TeacherService } from "./teacher.service";
 import { CreateTeacherDto } from "./dto/createTeacher.dto";
+import { UpdateTeacherDto } from "./dto/updateTeacher.dto";
 // import { UserService } from './user.service';
 // import { SignUpUserDto } from './dto/signup-user.dto';
 // import { SignInUserDto } from './dto/signin-user.dto';
@@ -30,7 +32,6 @@ import { CreateTeacherDto } from "./dto/createTeacher.dto";
 @Roles(Role.Teacher)
 @Controller("teacher")
 export class TeacherController {
-  constructor(private readonly teacherService: TeacherService) {}
+  constructor(private readonly teacherService: TeacherService) { }
 
-  
-}
+  }

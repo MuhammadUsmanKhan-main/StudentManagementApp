@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Body,
   Patch,
   Param,
@@ -23,6 +24,7 @@ import { RolesGuard } from "src/auth/guard/role.guard";
 import { Role } from "src/common/enums/role.enum";
 import { CreateTimetableDto } from "./dto/createTimetable.dto";
 import { TimetableService } from "./timetable.service";
+import { UpdateTimetableDto } from "./dto/updateTimetable.dto";
 // import { SubjectService } from "./subject.service";
 // import { CreateSubjectDto } from "./dto/createSubject.dto";
 // import { CourseService } from "./course.service";
@@ -36,7 +38,7 @@ import { TimetableService } from "./timetable.service";
 @Roles(Role.Admin)
 @Controller("admin")
 export class TimetableController {
-  constructor(private readonly timetableService: TimetableService) {}
+  constructor(private readonly timetableService: TimetableService) { }
 
   @Version("1")
   @Post("createRecordOnTimetable")
@@ -45,5 +47,34 @@ export class TimetableController {
   // @Roles(Role.Admin)
   createRecordOnTimetable(@Body() createTimetableDto: CreateTimetableDto) {
     return this.timetableService.createRecordOnTimetable(createTimetableDto);
+  }
+
+  @Version('1')
+  @Get("getTeachersTimetable")
+  getAll() {
+    return this.timetableService.findAll();
+  }
+
+  @Version('1')
+  @Get('getTimetableById/:id')
+  getOne(@Param('id') id: string) {
+    return this.timetableService.findOne(id);
+  }
+
+  @Version('1')
+  @Put('updateTimetable/:id')
+  @UsePipes(ValidationPipe)
+  update(
+    @Param('id') id: string,
+    @Body() updateTimetableDto: UpdateTimetableDto,
+  ) {
+    return this.timetableService.update(id, updateTimetableDto);
+  }
+
+  @Version('1')
+  @Delete('deleteTimetable/:id')
+  @HttpCode(204)
+  delete(@Param('id') id: string) {
+    return this.timetableService.delete(id);
   }
 }
