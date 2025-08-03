@@ -137,6 +137,92 @@ let TimetableService = class TimetableService {
         };
         return timeTable;
     }
+    async findAllTeachersTimetable() {
+        return await this.prismaService.timetable.findMany({
+            include: {
+                teacher: {
+                    select: { firstName: true, lastName: true },
+                },
+                subject: {
+                    select: { name: true },
+                },
+                section: {
+                    select: {
+                        name: true,
+                        course: { select: { grade: true } },
+                    },
+                },
+            },
+        });
+    }
+    async findOne(id) {
+        const record = await this.prismaService.timetable.findUnique({
+            where: { id },
+            include: {
+                teacher: {
+                    select: { firstName: true, lastName: true },
+                },
+                subject: {
+                    select: { name: true },
+                },
+                section: {
+                    select: {
+                        name: true,
+                        course: { select: { grade: true } },
+                    },
+                },
+            },
+        });
+        if (!record)
+            throw new common_1.NotFoundException('Timetable record not found');
+        return record;
+    }
+    async update(id, updateDto) {
+        if (updateDto.teacherId) {
+            const teacher = await this.prismaService.teacher.findUnique({
+                where: { id: updateDto.teacherId },
+            });
+            if (!teacher)
+                throw new common_1.NotFoundException('Teacher not found');
+        }
+        if (updateDto.subjectId) {
+            const subject = await this.prismaService.subject.findUnique({
+                where: { id: updateDto.subjectId },
+            });
+            if (!subject)
+                throw new common_1.NotFoundException('Subject not found');
+        }
+        if (updateDto.sectionId) {
+            const section = await this.prismaService.section.findUnique({
+                where: { id: updateDto.sectionId },
+            });
+            if (!section)
+                throw new common_1.NotFoundException('Section not found');
+        }
+        const updated = await this.prismaService.timetable.update({
+            where: { id },
+            data: {
+                ...updateDto,
+                startTime: updateDto.startTime
+                    ? new Date(updateDto.startTime)
+                    : undefined,
+                endTime: updateDto.endTime ? new Date(updateDto.endTime) : undefined,
+            },
+        });
+        return {
+            ...updated,
+            message: 'Record updated successfully',
+        };
+    }
+    async delete(id) {
+        const exists = await this.prismaService.timetable.findUnique({
+            where: { id },
+        });
+        if (!exists)
+            throw new common_1.NotFoundException('Timetable record not found');
+        await this.prismaService.timetable.delete({ where: { id } });
+        return { message: 'Record deleted successfully' };
+    }
 };
 exports.TimetableService = TimetableService;
 exports.TimetableService = TimetableService = __decorate([

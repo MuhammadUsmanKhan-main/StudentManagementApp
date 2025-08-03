@@ -31,21 +31,34 @@ import { UpdateCourseDto } from "./dto/updateCourse.dto";
 // import { SignUpUserDto } from './dto/signup-user.dto';
 // import { SignInUserDto } from './dto/signin-user.dto';
 @UseGuards(AuthGuard("jwt"), RolesGuard)
-// @Roles(Role.Admin)
-@Controller("course")
-export class CourseController {
+@Roles(Role.Admin)
+@Controller("admin/course")
+export class CourseAdminController {
   constructor(private readonly courseService: CourseService) { }
 
   @Version("1")
-  @Get("getAllCourses")
-  getAllCourses() {
-    return this.courseService.getAllCourses();
+  @Post("createCourse")
+  @HttpCode(200)
+  @UsePipes(ValidationPipe)
+  // @Roles(Role.Admin)
+  createCourse(@Body() createCourseDto: CreateCourseDto) {
+    return this.courseService.createCourse(createCourseDto);
+  }
+  
+  @Version("1")
+  @Put('updateCourse/:id')
+  updateCourse(
+    @Param('id') id: string,
+    @Body() updateCourseDto: UpdateCourseDto,
+  ) {
+    return this.courseService.updateCourse(id, updateCourseDto);
   }
 
   @Version("1")
-  @Get('getCourseById/:id')
-  getCourseById(@Param('id') id: string) {
-    return this.courseService.getCourseById(id);
+  @Delete('deleteCourse/:id')
+  deleteCourse(@Param('id') id: string) {
+    return this.courseService.deleteCourse(id);
   }
+
 
 }

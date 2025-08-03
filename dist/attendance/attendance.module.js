@@ -22,6 +22,7 @@ const section_module_1 = require("../section/section.module");
 const section_service_1 = require("../section/section.service");
 const course_module_1 = require("../course/course.module");
 const course_service_1 = require("../course/course.service");
+const teacher_attendance_controller_1 = require("./teacher.attendance.controller");
 let AttendanceModule = class AttendanceModule {
 };
 exports.AttendanceModule = AttendanceModule;
@@ -35,7 +36,7 @@ exports.AttendanceModule = AttendanceModule = __decorate([
             section_module_1.SectionModule,
             course_module_1.CourseModule
         ],
-        controllers: [attendance_controller_1.AttendanceController],
+        controllers: [attendance_controller_1.AttendanceController, teacher_attendance_controller_1.TeacherAttendanceController],
         providers: [
             attendance_service_1.AttendanceService,
             timetable_service_1.TimetableService,

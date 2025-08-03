@@ -16,7 +16,7 @@ let CourseService = class CourseService {
     constructor(prismaService) {
         this.prismaService = prismaService;
     }
-    async findCourse(number) {
+    async findCourseByGrade(number) {
         const course = await this.prismaService.course.findUnique({
             where: {
                 grade: number,
@@ -25,7 +25,7 @@ let CourseService = class CourseService {
         return course;
     }
     async createCourse(createCourseDto) {
-        const courseExist = await this.findCourse(createCourseDto.grade);
+        const courseExist = await this.findCourseByGrade(createCourseDto.grade);
         if (courseExist) {
             throw new common_1.ConflictException("Course already exists.");
         }
@@ -40,6 +40,43 @@ let CourseService = class CourseService {
             message: `${course.name} (${course.grade}) class has been successfully created.`,
         };
         return courseCreated;
+    }
+    async getAllCourses() {
+        return this.prismaService.course.findMany();
+    }
+    async getCourseById(id) {
+        const course = await this.prismaService.course.findUnique({ where: { id } });
+        if (!course)
+            throw new common_1.NotFoundException("Course not found");
+        return course;
+    }
+    async updateCourse(id, dto) {
+        const course = await this.prismaService.course.findUnique({ where: { id } });
+        if (!course)
+            throw new common_1.NotFoundException("Course not found");
+        return this.prismaService.course.update({
+            where: { id },
+            data: {
+                name: dto.name,
+                grade: dto.grade,
+                description: dto.description,
+            },
+        });
+    }
+    async deleteCourse(id) {
+        const course = await this.prismaService.course.findUnique({ where: { id } });
+        if (!course)
+            throw new common_1.NotFoundException("Course not found");
+        try {
+            await this.prismaService.course.delete({ where: { id } });
+            return { message: "Course deleted successfully" };
+        }
+        catch (error) {
+            if (error.code === 'P2003') {
+                throw new common_1.ConflictException("Cannot delete course: it is linked to other records.");
+            }
+            throw new common_1.InternalServerErrorException("An unexpected error occurred.");
+        }
     }
 };
 exports.CourseService = CourseService;

@@ -26,21 +26,7 @@ export class AttendanceService {
     private readonly studentService: StudentService
   ) {}
 
-  async getStudents(getStudentsDto: GetStudentsDto) {
-    const { courseId, sectionId } = getStudentsDto;
-
-    const students = await this.prismaService.student.findMany({
-      where: {
-        courseId,
-        sectionId,
-      },
-      select: {
-        id: true,
-      },
-    });
-
-    return students;
-  }
+  
 
   async createAttendance(createAttendanceDto: CreateAttendanceDto) {
     const { markedById, subjectId, students, date, sectionId } =

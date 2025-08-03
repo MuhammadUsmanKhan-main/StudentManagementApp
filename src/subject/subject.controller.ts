@@ -33,19 +33,10 @@ import { UpdateSubjectDto } from "./dto/updateSubject.dto";
 // import { SignUpUserDto } from './dto/signup-user.dto';
 // import { SignInUserDto } from './dto/signin-user.dto';
 @UseGuards(AuthGuard("jwt"), RolesGuard)
-@Roles(Role.Admin)
-@Controller("admin")
+// @Roles(Role.Admin)
+@Controller("subject")
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) { }
-
-  @Version("1")
-  @Post("createSubject")
-  @HttpCode(200)
-  @UsePipes(ValidationPipe)
-  // @Roles(Role.Admin)
-  createCourse(@Body() createSubjectDto: CreateSubjectDto) {
-    return this.subjectService.createSubject(createSubjectDto);
-  }
 
   @Version("1")
   @Get("getAllSubjects")
@@ -59,20 +50,5 @@ export class SubjectController {
     return this.subjectService.getSubjectById(id);
   }
 
-  @Version("1")
-  @Put("updateSubject/:id")
-  @UsePipes(ValidationPipe)
-  updateSubject(
-    @Param("id") id: string,
-    @Body() updateSubjectDto: UpdateSubjectDto
-  ) {
-    return this.subjectService.updateSubject(id, updateSubjectDto);
-  }
-
-  @Version("1")
-  @Delete("deleteSubject/:id")
-  deleteSubject(@Param("id") id: string) {
-    return this.subjectService.deleteSubject(id);
-  }
 
 }

@@ -15,6 +15,7 @@ import {
   Version,
   Request,
   NotFoundException,
+  Put,
 } from "@nestjs/common";
 // import { AdminService } from './admin.service';
 // import { StudentService } from './student.service';
@@ -29,24 +30,38 @@ import { UpdateTeacherDto } from "./dto/updateTeacher.dto";
 // import { SignUpUserDto } from './dto/signup-user.dto';
 // import { SignInUserDto } from './dto/signin-user.dto';
 @UseGuards(AuthGuard("jwt"), RolesGuard)
-// @Roles(Role.Teacher)
-@Controller("teacher")
-export class TeacherController {
-  constructor(private readonly teacherService: TeacherService) { }
+@Roles(Role.Admin)
+@Controller("admin/teacher")
+export class TeacherAdminController {
+  constructor(private readonly teacherService: TeacherService) {}
 
+  @Version("1")
+  @Post("createTeacher")
+  @HttpCode(200)
+  @UsePipes(ValidationPipe)
+  // @Roles(Role.Admin)
+  createTeacher(
+    @Request() request: any,
+    @Body() createTeacherDto: CreateTeacherDto
+  ) {
+    const adminId = request.user.id;
+    console.log({ adminId });
 
-@Version("1")
-  @Get("getAllTeachers")
-  async getAllTeachers() {
-    return await this.teacherService.findAll();
+    return this.teacherService.createTeacher(createTeacherDto, adminId);
   }
 
   @Version("1")
-  @Get('getTeacherById/:id')
-  async getTeacherById(@Param('id') id: string) {
-    const teacher = await this.teacherService.findOne(id);
-    if (!teacher) throw new NotFoundException('Teacher not found');
-    return teacher;
+  @Put("updateTeacher/:id")
+  async updateTeacher(
+    @Param("id") id: string,
+    @Body() updateDto: UpdateTeacherDto
+  ) {
+    return await this.teacherService.update(id, updateDto);
   }
 
+  @Version("1")
+  @Delete("deleteTeacher/:id")
+  async deleteTeacher(@Param("id") id: string) {
+    return await this.teacherService.remove(id);
   }
+}

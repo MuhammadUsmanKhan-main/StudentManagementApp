@@ -9,6 +9,7 @@ import { SubjectService } from './subject.service';
 import { SubjectController } from './subject.controller';
 import { CourseModule } from 'src/course/course.module';
 import { CourseService } from 'src/course/course.service';
+import { AdminSubjectController } from './admin.subject.controller';
 // import { TeacherController } from './teacher.controller';
 // import { TeacherService } from './teacher.service';
 // import { AdminService } from './admin.service';
@@ -16,7 +17,7 @@ import { CourseService } from 'src/course/course.service';
 
 @Module({
   imports:[CourseModule],
-  controllers: [SubjectController],
+  controllers: [SubjectController, AdminSubjectController],
   providers: [SubjectService, CourseService],
 })
 export class SubjectModule {}

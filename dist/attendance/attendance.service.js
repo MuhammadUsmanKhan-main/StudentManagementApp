@@ -24,19 +24,6 @@ let AttendanceService = class AttendanceService {
         this.subjectService = subjectService;
         this.studentService = studentService;
     }
-    async getStudents(getStudentsDto) {
-        const { courseId, sectionId } = getStudentsDto;
-        const students = await this.prismaService.student.findMany({
-            where: {
-                courseId,
-                sectionId,
-            },
-            select: {
-                id: true,
-            },
-        });
-        return students;
-    }
     async createAttendance(createAttendanceDto) {
         const { markedById, subjectId, students, date, sectionId } = createAttendanceDto;
         const startOfDay = new Date(date);

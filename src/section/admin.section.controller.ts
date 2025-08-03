@@ -33,27 +33,36 @@ import { UpdateSectionDto } from "./dto/updateSection.dto";
 // import { SignUpUserDto } from './dto/signup-user.dto';
 // import { SignInUserDto } from './dto/signin-user.dto';
 @UseGuards(AuthGuard("jwt"), RolesGuard)
-// @Roles(Role.Admin)
-@Controller("secion")
-export class SectionController {
+@Roles(Role.Admin)
+@Controller("admin/section")
+export class AdminSectionController {
   constructor(private readonly sectionService: SectionService) { }
 
- 
-
   @Version("1")
-  @Get("getAllSections")
+  @Post("createSection")
   @HttpCode(200)
-  getAllSections() {
-    return this.sectionService.getAllSections();
+  @UsePipes(ValidationPipe)
+  // @Roles(Role.Admin)
+  createSection(@Body() createSectionDto: CreateSectionDto) {
+    return this.sectionService.createSection(createSectionDto);
   }
 
   @Version("1")
-  @Get("getSectionById/:id")
+  @Put("updateSection/:id")
   @HttpCode(200)
-  getSection(@Param("id") id: string) {
-    return this.sectionService.getSectionById(id);
+  @UsePipes(ValidationPipe)
+  updateSection(
+    @Param("id") id: string,
+    @Body() updateSectionDto: UpdateSectionDto
+  ) {
+    return this.sectionService.updateSection(id, updateSectionDto);
   }
 
- 
+  @Version("1")
+  @Delete("deleteSection/:id")
+  @HttpCode(200)
+  deleteSection(@Param("id") id: string) {
+    return this.sectionService.deleteSection(id);
+  }
 
 }

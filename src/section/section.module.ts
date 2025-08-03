@@ -11,6 +11,7 @@ import { SectionService } from "./section.service";
 import { SectionController } from "./section.controller";
 import { CourseModule } from "src/course/course.module";
 import { CourseService } from "src/course/course.service";
+import { AdminSectionController } from "./admin.section.controller";
 // import { SubjectService } from './subject.service';
 // import { SubjectController } from './subject.controller';
 // import { TeacherController } from './teacher.controller';
@@ -20,7 +21,7 @@ import { CourseService } from "src/course/course.service";
 
 @Module({
   imports: [CourseModule],
-  controllers: [SectionController],
+  controllers: [SectionController, AdminSectionController],
   providers: [SectionService, CourseService],
 })
 export class SectionModule {}

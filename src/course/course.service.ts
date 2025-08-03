@@ -7,7 +7,7 @@ import { UpdateCourseDto } from "./dto/updateCourse.dto";
 export class CourseService {
   constructor(private readonly prismaService: PrismaService) { }
 
-  async findCourse(number: number) {
+  async findCourseByGrade(number: number) {
     const course = await this.prismaService.course.findUnique({
       where: {
         grade: number,
@@ -19,7 +19,7 @@ export class CourseService {
   // //<=============================================Apis Related To Course=======================================>
 
   async createCourse(createCourseDto: CreateCourseDto) {
-    const courseExist = await this.findCourse(createCourseDto.grade);
+    const courseExist = await this.findCourseByGrade(createCourseDto.grade);
 
     if (courseExist) {
       throw new ConflictException("Course already exists.");

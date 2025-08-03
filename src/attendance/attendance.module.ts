@@ -13,6 +13,7 @@ import { SectionModule } from "src/section/section.module";
 import { SectionService } from "src/section/section.service";
 import { CourseModule } from "src/course/course.module";
 import { CourseService } from "src/course/course.service";
+import { TeacherAttendanceController } from "./teacher.attendance.controller";
 // import { SubjectService } from './subject.service';
 // import { SubjectController } from './subject.controller';
 // import { TeacherController } from './teacher.controller';
@@ -29,7 +30,7 @@ import { CourseService } from "src/course/course.service";
     SectionModule,
     CourseModule
   ],
-  controllers: [AttendanceController],
+  controllers: [AttendanceController, TeacherAttendanceController],
   providers: [
     AttendanceService,
     TimetableService,

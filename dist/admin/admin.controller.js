@@ -20,10 +20,9 @@ const roles_decorator_1 = require("../auth/decorator/roles.decorator");
 const role_guard_1 = require("../auth/guard/role.guard");
 const role_enum_1 = require("../common/enums/role.enum");
 const signup_admin_dto_1 = require("./dto/signup-admin.dto");
-const createStudent_dto_1 = require("../student/dto/createStudent.dto");
 const student_service_1 = require("../student/student.service");
-const createTeacher_dto_1 = require("../teacher/dto/createTeacher.dto");
 const teacher_service_1 = require("../teacher/teacher.service");
+const updateAdmin_dto_1 = require("./dto/updateAdmin.dto");
 let AdminController = class AdminController {
     constructor(adminService, studentService, teacherService) {
         this.adminService = adminService;
@@ -33,15 +32,17 @@ let AdminController = class AdminController {
     createAdmin(signUpAdminDto, res) {
         return this.adminService.createAdmin(signUpAdminDto, res);
     }
-    createStudent(request, createStudentDto) {
-        const adminId = request.user.id;
-        console.log({ adminId });
-        return this.studentService.createStudent(createStudentDto, adminId);
+    getAll() {
+        return this.adminService.getAllAdmins();
     }
-    createTeacher(request, createTeacherDto) {
-        const adminId = request.user.id;
-        console.log({ adminId });
-        return this.teacherService.createTeacher(createTeacherDto, adminId);
+    getById(id) {
+        return this.adminService.getAdminById(id);
+    }
+    updateAdmin(id, dto) {
+        return this.adminService.updateAdmin(id, dto);
+    }
+    delete(id) {
+        return this.adminService.deleteAdmin(id);
     }
 };
 exports.AdminController = AdminController;
@@ -58,26 +59,36 @@ __decorate([
 ], AdminController.prototype, "createAdmin", null);
 __decorate([
     (0, common_1.Version)("1"),
-    (0, common_1.Post)("createStudent"),
-    (0, common_1.HttpCode)(200),
-    (0, common_1.UsePipes)(common_1.ValidationPipe),
-    __param(0, (0, common_1.Request)()),
-    __param(1, (0, common_1.Body)()),
+    (0, common_1.Get)("getAllAdmins"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, createStudent_dto_1.CreateStudentDto]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], AdminController.prototype, "createStudent", null);
+], AdminController.prototype, "getAll", null);
 __decorate([
     (0, common_1.Version)("1"),
-    (0, common_1.Post)("createTeacher"),
-    (0, common_1.HttpCode)(200),
-    (0, common_1.UsePipes)(common_1.ValidationPipe),
-    __param(0, (0, common_1.Request)()),
+    (0, common_1.Get)('getAdminById/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "getById", null);
+__decorate([
+    (0, common_1.Version)("1"),
+    (0, common_1.Put)('updateAdmin/:id'),
+    __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, createTeacher_dto_1.CreateTeacherDto]),
+    __metadata("design:paramtypes", [String, updateAdmin_dto_1.UpdateAdminDto]),
     __metadata("design:returntype", void 0)
-], AdminController.prototype, "createTeacher", null);
+], AdminController.prototype, "updateAdmin", null);
+__decorate([
+    (0, common_1.Version)("1"),
+    (0, common_1.Delete)('deleteAdmin/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AdminController.prototype, "delete", null);
 exports.AdminController = AdminController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), role_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),

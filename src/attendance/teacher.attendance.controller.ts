@@ -14,7 +14,6 @@ import {
   Res,
   Version,
   Request,
-  Put,
 } from "@nestjs/common";
 // import { AdminService } from './admin.service';
 // import { StudentService } from './student.service';
@@ -22,9 +21,13 @@ import { AuthGuard } from "@nestjs/passport";
 import { Roles } from "src/auth/decorator/roles.decorator";
 import { RolesGuard } from "src/auth/guard/role.guard";
 import { Role } from "src/common/enums/role.enum";
-import { SectionService } from "./section.service";
-import { CreateSectionDto } from "./dto/createSection.dto";
-import { UpdateSectionDto } from "./dto/updateSection.dto";
+import { CreateAttendanceDto } from "./dto/createAttendance.dto";
+import { AttendanceService } from "./attendance.service";
+import { GetStudentsDto } from "./dto/getStudentsDto";
+// import { HomeworkService } from "./homework.service";
+// import { CreateHomeworkDto } from "./dto/createhomework.dto";
+// import { SubjectService } from "./subject.service";
+// import { CreateSubjectDto } from "./dto/createSubject.dto";
 // import { CourseService } from "./course.service";
 // import { CreateCourseDto } from "./dto/createCourse.dto";
 // import { TeacherService } from "./teacher.service";
@@ -33,27 +36,18 @@ import { UpdateSectionDto } from "./dto/updateSection.dto";
 // import { SignUpUserDto } from './dto/signup-user.dto';
 // import { SignInUserDto } from './dto/signin-user.dto';
 @UseGuards(AuthGuard("jwt"), RolesGuard)
-// @Roles(Role.Admin)
-@Controller("secion")
-export class SectionController {
-  constructor(private readonly sectionService: SectionService) { }
+@Roles(Role.Teacher)
+@Controller("teacher/attendance")
+export class TeacherAttendanceController {
+  constructor(private readonly attendanceService: AttendanceService) {}
 
- 
-
-  @Version("1")
-  @Get("getAllSections")
-  @HttpCode(200)
-  getAllSections() {
-    return this.sectionService.getAllSections();
-  }
 
   @Version("1")
-  @Get("getSectionById/:id")
+  @Post("createAttendance")
   @HttpCode(200)
-  getSection(@Param("id") id: string) {
-    return this.sectionService.getSectionById(id);
+  //   @UsePipes(ValidationPipe)
+  // @Roles(Role.Admin)
+  createAttendance(@Body() createAttendanceDto: CreateAttendanceDto) {
+    return this.attendanceService.createAttendance(createAttendanceDto);
   }
-
- 
-
 }

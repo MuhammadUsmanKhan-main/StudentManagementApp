@@ -14,13 +14,14 @@ const course_module_1 = require("../course/course.module");
 const section_module_1 = require("../section/section.module");
 const course_service_1 = require("../course/course.service");
 const section_service_1 = require("../section/section.service");
+const admin_student_controller_1 = require("./admin.student.controller");
 let StudentModule = class StudentModule {
 };
 exports.StudentModule = StudentModule;
 exports.StudentModule = StudentModule = __decorate([
     (0, common_1.Module)({
         imports: [course_module_1.CourseModule, section_module_1.SectionModule],
-        controllers: [student_controller_1.StudentController],
+        controllers: [student_controller_1.StudentController, admin_student_controller_1.AdminStudentController],
         providers: [student_service_1.StudentService, course_service_1.CourseService, section_service_1.SectionService],
     })
 ], StudentModule);
