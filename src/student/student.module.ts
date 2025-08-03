@@ -13,12 +13,13 @@ import { CourseModule } from 'src/course/course.module';
 import { SectionModule } from 'src/section/section.module';
 import { CourseService } from 'src/course/course.service';
 import { SectionService } from 'src/section/section.service';
+import { AdminStudentController } from './admin.student.controller';
 // import { AdminService } from './admin.service';
 // import { AdminController } from './admin.controller';
 
 @Module({
   imports:[CourseModule, SectionModule],
-  controllers: [StudentController],
+  controllers: [StudentController,AdminStudentController],
   providers: [StudentService, CourseService, SectionService],
 })
 export class StudentModule {}

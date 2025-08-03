@@ -15,34 +15,38 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SubjectController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
-const roles_decorator_1 = require("../auth/decorator/roles.decorator");
 const role_guard_1 = require("../auth/guard/role.guard");
-const role_enum_1 = require("../common/enums/role.enum");
 const subject_service_1 = require("./subject.service");
-const createSubject_dto_1 = require("./dto/createSubject.dto");
 let SubjectController = class SubjectController {
     constructor(subjectService) {
         this.subjectService = subjectService;
     }
-    createCourse(createSubjectDto) {
-        return this.subjectService.createSubject(createSubjectDto);
+    getAllSubjects() {
+        return this.subjectService.getAllSubjects();
+    }
+    getSubjectById(id) {
+        return this.subjectService.getSubjectById(id);
     }
 };
 exports.SubjectController = SubjectController;
 __decorate([
     (0, common_1.Version)("1"),
-    (0, common_1.Post)("createSubject"),
-    (0, common_1.HttpCode)(200),
-    (0, common_1.UsePipes)(common_1.ValidationPipe),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Get)("getAllSubjects"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [createSubject_dto_1.CreateSubjectDto]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], SubjectController.prototype, "createCourse", null);
+], SubjectController.prototype, "getAllSubjects", null);
+__decorate([
+    (0, common_1.Version)("1"),
+    (0, common_1.Get)("getSubjectById/:id"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], SubjectController.prototype, "getSubjectById", null);
 exports.SubjectController = SubjectController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), role_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
-    (0, common_1.Controller)("admin"),
+    (0, common_1.Controller)("subject"),
     __metadata("design:paramtypes", [subject_service_1.SubjectService])
 ], SubjectController);
 //# sourceMappingURL=subject.controller.js.map

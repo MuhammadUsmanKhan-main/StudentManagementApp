@@ -12,13 +12,14 @@ const section_service_1 = require("./section.service");
 const section_controller_1 = require("./section.controller");
 const course_module_1 = require("../course/course.module");
 const course_service_1 = require("../course/course.service");
+const admin_section_controller_1 = require("./admin.section.controller");
 let SectionModule = class SectionModule {
 };
 exports.SectionModule = SectionModule;
 exports.SectionModule = SectionModule = __decorate([
     (0, common_1.Module)({
         imports: [course_module_1.CourseModule],
-        controllers: [section_controller_1.SectionController],
+        controllers: [section_controller_1.SectionController, admin_section_controller_1.AdminSectionController],
         providers: [section_service_1.SectionService, course_service_1.CourseService],
     })
 ], SectionModule);

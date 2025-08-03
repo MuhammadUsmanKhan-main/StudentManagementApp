@@ -190,7 +190,7 @@ export class TimetableService {
     return timeTable;
   }
 
-  async findAll() {
+  async findAllTeachersTimetable() {
     return await this.prismaService.timetable.findMany({
       include: {
         teacher: {

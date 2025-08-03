@@ -12,13 +12,14 @@ const subject_service_1 = require("./subject.service");
 const subject_controller_1 = require("./subject.controller");
 const course_module_1 = require("../course/course.module");
 const course_service_1 = require("../course/course.service");
+const admin_subject_controller_1 = require("./admin.subject.controller");
 let SubjectModule = class SubjectModule {
 };
 exports.SubjectModule = SubjectModule;
 exports.SubjectModule = SubjectModule = __decorate([
     (0, common_1.Module)({
         imports: [course_module_1.CourseModule],
-        controllers: [subject_controller_1.SubjectController],
+        controllers: [subject_controller_1.SubjectController, admin_subject_controller_1.AdminSubjectController],
         providers: [subject_service_1.SubjectService, course_service_1.CourseService],
     })
 ], SubjectModule);

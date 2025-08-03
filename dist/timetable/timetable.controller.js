@@ -15,34 +15,38 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TimetableController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
-const roles_decorator_1 = require("../auth/decorator/roles.decorator");
 const role_guard_1 = require("../auth/guard/role.guard");
-const role_enum_1 = require("../common/enums/role.enum");
-const createTimetable_dto_1 = require("./dto/createTimetable.dto");
 const timetable_service_1 = require("./timetable.service");
 let TimetableController = class TimetableController {
     constructor(timetableService) {
         this.timetableService = timetableService;
     }
-    createRecordOnTimetable(createTimetableDto) {
-        return this.timetableService.createRecordOnTimetable(createTimetableDto);
+    getAll() {
+        return this.timetableService.findAllTeachersTimetable();
+    }
+    getOne(id) {
+        return this.timetableService.findOne(id);
     }
 };
 exports.TimetableController = TimetableController;
 __decorate([
-    (0, common_1.Version)("1"),
-    (0, common_1.Post)("createRecordOnTimetable"),
-    (0, common_1.HttpCode)(200),
-    (0, common_1.UsePipes)(common_1.ValidationPipe),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Version)('1'),
+    (0, common_1.Get)("getTeachersTimetable"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [createTimetable_dto_1.CreateTimetableDto]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], TimetableController.prototype, "createRecordOnTimetable", null);
+], TimetableController.prototype, "getAll", null);
+__decorate([
+    (0, common_1.Version)('1'),
+    (0, common_1.Get)('getTimetableById/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], TimetableController.prototype, "getOne", null);
 exports.TimetableController = TimetableController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), role_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
-    (0, common_1.Controller)("admin"),
+    (0, common_1.Controller)("timetable"),
     __metadata("design:paramtypes", [timetable_service_1.TimetableService])
 ], TimetableController);
 //# sourceMappingURL=timetable.controller.js.map

@@ -15,34 +15,38 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CourseController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
-const roles_decorator_1 = require("../auth/decorator/roles.decorator");
 const role_guard_1 = require("../auth/guard/role.guard");
-const role_enum_1 = require("../common/enums/role.enum");
 const course_service_1 = require("./course.service");
-const createCourse_dto_1 = require("./dto/createCourse.dto");
 let CourseController = class CourseController {
     constructor(courseService) {
         this.courseService = courseService;
     }
-    createCourse(createCourseDto) {
-        return this.courseService.createCourse(createCourseDto);
+    getAllCourses() {
+        return this.courseService.getAllCourses();
+    }
+    getCourseById(id) {
+        return this.courseService.getCourseById(id);
     }
 };
 exports.CourseController = CourseController;
 __decorate([
     (0, common_1.Version)("1"),
-    (0, common_1.Post)("createCourse"),
-    (0, common_1.HttpCode)(200),
-    (0, common_1.UsePipes)(common_1.ValidationPipe),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Get)("getAllCourses"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [createCourse_dto_1.CreateCourseDto]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], CourseController.prototype, "createCourse", null);
+], CourseController.prototype, "getAllCourses", null);
+__decorate([
+    (0, common_1.Version)("1"),
+    (0, common_1.Get)('getCourseById/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], CourseController.prototype, "getCourseById", null);
 exports.CourseController = CourseController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), role_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
-    (0, common_1.Controller)("admin"),
+    (0, common_1.Controller)("course"),
     __metadata("design:paramtypes", [course_service_1.CourseService])
 ], CourseController);
 //# sourceMappingURL=course.controller.js.map

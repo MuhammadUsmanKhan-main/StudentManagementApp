@@ -22,9 +22,9 @@ import { AuthGuard } from "@nestjs/passport";
 import { Roles } from "src/auth/decorator/roles.decorator";
 import { RolesGuard } from "src/auth/guard/role.guard";
 import { Role } from "src/common/enums/role.enum";
-import { SectionService } from "./section.service";
-import { CreateSectionDto } from "./dto/createSection.dto";
-import { UpdateSectionDto } from "./dto/updateSection.dto";
+import { SubjectService } from "./subject.service";
+import { CreateSubjectDto } from "./dto/createSubject.dto";
+import { UpdateSubjectDto } from "./dto/updateSubject.dto";
 // import { CourseService } from "./course.service";
 // import { CreateCourseDto } from "./dto/createCourse.dto";
 // import { TeacherService } from "./teacher.service";
@@ -33,27 +33,34 @@ import { UpdateSectionDto } from "./dto/updateSection.dto";
 // import { SignUpUserDto } from './dto/signup-user.dto';
 // import { SignInUserDto } from './dto/signin-user.dto';
 @UseGuards(AuthGuard("jwt"), RolesGuard)
-// @Roles(Role.Admin)
-@Controller("secion")
-export class SectionController {
-  constructor(private readonly sectionService: SectionService) { }
-
- 
+@Roles(Role.Admin)
+@Controller("admin/subject")
+export class AdminSubjectController {
+  constructor(private readonly subjectService: SubjectService) { }
 
   @Version("1")
-  @Get("getAllSections")
+  @Post("createSubject")
   @HttpCode(200)
-  getAllSections() {
-    return this.sectionService.getAllSections();
+  @UsePipes(ValidationPipe)
+  // @Roles(Role.Admin)
+  createCourse(@Body() createSubjectDto: CreateSubjectDto) {
+    return this.subjectService.createSubject(createSubjectDto);
   }
 
   @Version("1")
-  @Get("getSectionById/:id")
-  @HttpCode(200)
-  getSection(@Param("id") id: string) {
-    return this.sectionService.getSectionById(id);
+  @Put("updateSubject/:id")
+  @UsePipes(ValidationPipe)
+  updateSubject(
+    @Param("id") id: string,
+    @Body() updateSubjectDto: UpdateSubjectDto
+  ) {
+    return this.subjectService.updateSubject(id, updateSubjectDto);
   }
 
- 
+  @Version("1")
+  @Delete("deleteSubject/:id")
+  deleteSubject(@Param("id") id: string) {
+    return this.subjectService.deleteSubject(id);
+  }
 
 }

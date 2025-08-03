@@ -37,6 +37,7 @@ import { StudentSignUpDto } from "./dto/studentSignup.dto";
 import { SectionService } from "src/section/section.service";
 import { CourseService } from "src/course/course.service";
 import { UpdateStudentDto } from "./dto/updateStudent.dto";
+import { GetStudentsDto } from "src/attendance/dto/getStudentsDto";
 // import { SignUpAdminDto } from "./dto/signup-admin.dto";
 
 @Injectable()
@@ -146,6 +147,7 @@ export class StudentService {
     return student;
   }
 
+
   async updateStudent(id: string, dto: UpdateStudentDto) {
     const student = await this.prismaService.student.findUnique({ where: { id } });
 
@@ -164,16 +166,12 @@ export class StudentService {
     }
 
     if (dto.courseId) {
-      const course = await this.prismaService.course.findUnique({
-        where: { id: dto.courseId },
-      });
+      const course = await this.courseService.getCourseById(dto.courseId);
       if (!course) throw new NotFoundException("Course does not exist");
     }
 
     if (dto.sectionId) {
-      const section = await this.prismaService.section.findUnique({
-        where: { id: dto.sectionId },
-      });
+      const section = await this.sectionService.getSectionById(dto.sectionId);
       if (!section) throw new NotFoundException("Section does not exist");
     }
 
@@ -204,6 +202,23 @@ export class StudentService {
     return {
       message: `Student ${student.firstName} ${student.lastName} deleted successfully.`,
     };
+  }
+
+
+async getStudentsOfSpecificClassAndSection(courseId:string, sectionId:string) {
+    // const { courseId, sectionId } = getStudentsDto;
+
+    const students = await this.prismaService.student.findMany({
+      where: {
+        courseId,
+        sectionId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    return students;
   }
 
 }
