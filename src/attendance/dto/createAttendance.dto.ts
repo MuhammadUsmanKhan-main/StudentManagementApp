@@ -32,9 +32,9 @@ export class CreateAttendanceDto extends AttendanceEntity {
   @IsNotEmpty()
   date: Date;
   
-  @IsString()
-  @IsNotEmpty()
-  markedById: string;
+  // @IsString()
+  // @IsNotEmpty()
+  // markedById: string;
 
   @IsNotEmpty()
   @IsUUID()

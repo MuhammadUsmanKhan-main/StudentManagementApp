@@ -7,6 +7,9 @@ import { StudentEntity } from "../entities/student.entity";
 @Exclude()
 export class StudentDto extends OmitType(StudentEntity, ["password"]) {
   @Expose()
+  id: string;
+
+  @Expose()
   firstName: string;
 
   @Expose()
@@ -28,7 +31,7 @@ export class StudentDto extends OmitType(StudentEntity, ["password"]) {
   section: {
     name: string;
   };
-  
+
   @Expose()
   course: {
     class: number;

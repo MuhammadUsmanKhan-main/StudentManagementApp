@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -26,25 +27,27 @@ export class AttendanceService {
     private readonly studentService: StudentService
   ) {}
 
-  
-
-  async createAttendance(createAttendanceDto: CreateAttendanceDto) {
-    const { markedById, subjectId, students, date, sectionId } =
-      createAttendanceDto;
+  async createAttendance(
+    markedById: string,
+    createAttendanceDto: CreateAttendanceDto
+  ) {
+    const { subjectId, students, date, sectionId } = createAttendanceDto;
     // const currentTime = new Date();
     const startOfDay = new Date(date); // 2025-07-27T00:00:00.000Z
     const endOfDay = new Date(startOfDay);
     endOfDay.setDate(endOfDay.getDate() + 1); // 2025-07-28T00:00:00.000Z
 
+    if (isNaN(startOfDay.getTime())) {
+    throw new BadRequestException("Invalid date provided");
+  }
     // const year = startOfDay.getFullYear();
     // const month = String(startOfDay.getMonth() + 1).padStart(2, "0"); // months are 0-indexed
     // const day = String(startOfDay.getDate()).padStart(2, "0");
 
-    // const formattedDate = `${year}-${month}-${day}`;
-
-    const dayName = startOfDay
+    const now = new Date(); // Current date/time for dayName & timetable check
+    const dayName = now
       .toLocaleString("en-US", { weekday: "short" })
-      .toUpperCase(); // e.g., "MON"
+      .toUpperCase();
 
     // check students exists
 
@@ -82,20 +85,20 @@ export class AttendanceService {
 
     // verify does this teacher teaches that subject on that day
 
-    const timetableSlot = await this.prismaService.timetable.findFirst({
-      where: {
-        teacherId: markedById,
-        subjectId,
-        sectionId,
-        day: dayName as WeekDays,
-      },
-    });
+    // const timetableSlot = await this.prismaService.timetable.findFirst({
+    //   where: {
+    //     teacherId: markedById,
+    //     subjectId,
+    //     sectionId,
+    //     day: dayName as WeekDays,
+    //   },
+    // });
 
-    if (!timetableSlot) {
-      throw new NotFoundException(
-        `No valid timetable slot found for teacher and subject on ${dayName}`
-      );
-    }
+    // if (!timetableSlot) {
+    //   throw new NotFoundException(
+    //     `No valid timetable slot found for teacher and subject on ${dayName}`
+    //   );
+    // }
 
     // console.log("Parsed date:", startOfDay.toISOString());
     //       console.log("Slot start:", timetableSlot.startTime.toISOString());
@@ -103,15 +106,15 @@ export class AttendanceService {
 
     // check does attendance marked on its time according to timetable
 
-    const isInTimeSlot =
-      startOfDay >= timetableSlot.startTime &&
-      startOfDay <= timetableSlot.endTime;
+    // const isInTimeSlot =
+    //   startOfDay >= timetableSlot.startTime &&
+    //   startOfDay <= timetableSlot.endTime;
 
-    if (!isInTimeSlot) {
-      throw new NotFoundException(
-        `Current time is not within the valid class period (${timetableSlot.startTime.toLocaleTimeString()} - ${timetableSlot.endTime.toLocaleTimeString()})`
-      );
-    }
+    // if (!isInTimeSlot) {
+    //   throw new NotFoundException(
+    //     `Current time is not within the valid class period (${timetableSlot.startTime.toLocaleTimeString()} - ${timetableSlot.endTime.toLocaleTimeString()})`
+    //   );
+    // }
 
     //finally create attendance
 
@@ -146,4 +149,21 @@ export class AttendanceService {
       records: attendanceEntries,
     };
   }
+
+  async getStudentAttendanceCount(studentId: string) {
+    const studentAttendanceCounts = await this.prismaService.attendance.groupBy(
+      {
+        by: ["status"],
+        where: {
+          studentId,
+        },
+        _count: {
+          status: true,
+        },
+      }
+    );
+
+    return studentAttendanceCounts;
+  }
 }
+

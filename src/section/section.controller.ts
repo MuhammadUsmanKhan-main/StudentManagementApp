@@ -34,7 +34,7 @@ import { UpdateSectionDto } from "./dto/updateSection.dto";
 // import { SignInUserDto } from './dto/signin-user.dto';
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 // @Roles(Role.Admin)
-@Controller("secion")
+@Controller("section")
 export class SectionController {
   constructor(private readonly sectionService: SectionService) { }
 

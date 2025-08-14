@@ -42,10 +42,11 @@ import { GetStudentsDto } from "src/attendance/dto/getStudentsDto";
 
 @Injectable()
 export class StudentService {
-  constructor(private readonly prismaService: PrismaService,
+  constructor(
+    private readonly prismaService: PrismaService,
     private readonly sectionService: SectionService,
     private readonly courseService: CourseService
-  ) { }
+  ) {}
 
   async findByEmail(email: string) {
     const student = await this.prismaService.student.findUnique({
@@ -121,14 +122,16 @@ export class StudentService {
     return studentDto;
   }
 
-
   async getAllStudents() {
-    return await this.prismaService.student.findMany({
+    const students = await this.prismaService.student.findMany({
       include: {
         course: true,
         section: true,
       },
     });
+
+    const studentDto = plainToInstance(StudentDto, students);
+    return studentDto;
   }
 
   async getStudentById(id: string) {
@@ -144,12 +147,16 @@ export class StudentService {
       throw new NotFoundException("Student not found");
     }
 
-    return student;
+    const studentDto = plainToInstance(StudentDto, student);
+    return studentDto;
+
+    // return student;
   }
 
-
   async updateStudent(id: string, dto: UpdateStudentDto) {
-    const student = await this.prismaService.student.findUnique({ where: { id } });
+    const student = await this.prismaService.student.findUnique({
+      where: { id },
+    });
 
     if (!student) {
       throw new NotFoundException("Student not found");
@@ -191,7 +198,9 @@ export class StudentService {
   }
 
   async deleteStudent(id: string) {
-    const student = await this.prismaService.student.findUnique({ where: { id } });
+    const student = await this.prismaService.student.findUnique({
+      where: { id },
+    });
 
     if (!student) {
       throw new NotFoundException("Student not found");
@@ -204,8 +213,10 @@ export class StudentService {
     };
   }
 
-
-async getStudentsOfSpecificClassAndSection(courseId:string, sectionId:string) {
+  async getStudentsOfSpecificClassAndSection(
+    courseId: string,
+    sectionId: string
+  ) {
     // const { courseId, sectionId } = getStudentsDto;
 
     const students = await this.prismaService.student.findMany({
@@ -218,7 +229,7 @@ async getStudentsOfSpecificClassAndSection(courseId:string, sectionId:string) {
       },
     });
 
-    return students;
+    const studentDto = plainToInstance(StudentDto, students);
+    return studentDto;
   }
-
 }

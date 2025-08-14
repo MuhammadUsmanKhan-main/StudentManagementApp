@@ -33,10 +33,10 @@ enum UserRole {
 enum AttendanceStatus {
   PRESENT
   ABSENT
-  // LATE
-  STUDY_LEAVE
-  HOLIDAY
-  SUSPENDED
+  LATE
+  LEAVE
+  // HOLIDAY
+  // SUSPENDED
   NOT_MARKED
 }
 

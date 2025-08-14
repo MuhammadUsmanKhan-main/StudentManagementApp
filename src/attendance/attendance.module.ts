@@ -14,6 +14,7 @@ import { SectionService } from "src/section/section.service";
 import { CourseModule } from "src/course/course.module";
 import { CourseService } from "src/course/course.service";
 import { TeacherAttendanceController } from "./teacher.attendance.controller";
+import { StudentAttendanceController } from "./student.attendance.controller";
 // import { SubjectService } from './subject.service';
 // import { SubjectController } from './subject.controller';
 // import { TeacherController } from './teacher.controller';
@@ -28,9 +29,13 @@ import { TeacherAttendanceController } from "./teacher.attendance.controller";
     SubjectModule,
     StudentModule,
     SectionModule,
-    CourseModule
+    CourseModule,
   ],
-  controllers: [AttendanceController, TeacherAttendanceController],
+  controllers: [
+    AttendanceController,
+    StudentAttendanceController,
+    TeacherAttendanceController,
+  ],
   providers: [
     AttendanceService,
     TimetableService,
@@ -38,7 +43,7 @@ import { TeacherAttendanceController } from "./teacher.attendance.controller";
     SubjectService,
     StudentService,
     SectionService,
-    CourseService
+    CourseService,
   ],
 })
 export class AttendanceModule {}

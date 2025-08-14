@@ -25,34 +25,23 @@ import { Role } from "src/common/enums/role.enum";
 import { CreateAttendanceDto } from "./dto/createAttendance.dto";
 import { AttendanceService } from "./attendance.service";
 import { GetStudentsDto } from "./dto/getStudentsDto";
-// import { HomeworkService } from "./homework.service";
-// import { CreateHomeworkDto } from "./dto/createhomework.dto";
-// import { SubjectService } from "./subject.service";
-// import { CreateSubjectDto } from "./dto/createSubject.dto";
-// import { CourseService } from "./course.service";
-// import { CreateCourseDto } from "./dto/createCourse.dto";
-// import { TeacherService } from "./teacher.service";
-// import { CreateTeacherDto } from "./dto/createTeacher.dto";
-// import { UserService } from './user.service';
-// import { SignUpUserDto } from './dto/signup-user.dto';
-// import { SignInUserDto } from './dto/signin-user.dto';
+
 @UseGuards(AuthGuard("jwt"), RolesGuard)
-@Roles(Role.Teacher)
-@Controller("teacher/attendance")
-export class TeacherAttendanceController {
+@Roles(Role.Student)
+@Controller("student/attendance")
+export class StudentAttendanceController {
   constructor(private readonly attendanceService: AttendanceService) {}
 
   @Version("1")
-  @Post("createAttendance")
+  @Get("count")
   @HttpCode(200)
   //   @UsePipes(ValidationPipe)
   // @Roles(Role.Admin)
-  createAttendance(
-    @Req() res,
-    @Body() createAttendanceDto: CreateAttendanceDto
+  getStudentAttendance(
+    @Req() res
   ) {
     // console.log(res.user.id);
 
-    return this.attendanceService.createAttendance(res.user.id,createAttendanceDto);
+    return this.attendanceService.getStudentAttendanceCount(res.user.id);
   }
 }
