@@ -214,7 +214,7 @@ model Homework {
 
 model Attendance {
   id         String           @id @default(uuid())
-  date       DateTime
+  date       DateTime         @db.Date
   status     AttendanceStatus @default(NOT_MARKED)
   studentId  String
   student    Student          @relation(fields: [studentId], references: [id])

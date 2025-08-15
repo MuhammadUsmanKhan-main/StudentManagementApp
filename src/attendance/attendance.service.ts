@@ -13,6 +13,7 @@ import { GetStudentsDto } from "./dto/getStudentsDto";
 import { TeacherService } from "src/teacher/teacher.service";
 import { SubjectService } from "src/subject/subject.service";
 import { StudentService } from "src/student/student.service";
+import { AttendanceStatus } from "@prisma/client";
 // import { CreateSubjectDto } from "./dto/createSubject.dto";
 
 // import { CreateCourseDto } from "./dto/createCourse.dto";
@@ -38,8 +39,8 @@ export class AttendanceService {
     endOfDay.setDate(endOfDay.getDate() + 1); // 2025-07-28T00:00:00.000Z
 
     if (isNaN(startOfDay.getTime())) {
-    throw new BadRequestException("Invalid date provided");
-  }
+      throw new BadRequestException("Invalid date provided");
+    }
     // const year = startOfDay.getFullYear();
     // const month = String(startOfDay.getMonth() + 1).padStart(2, "0"); // months are 0-indexed
     // const day = String(startOfDay.getDate()).padStart(2, "0");
@@ -156,14 +157,27 @@ export class AttendanceService {
         by: ["status"],
         where: {
           studentId,
-        },
+        }, 
         _count: {
           status: true,
         },
       }
     );
+    const allStatuses = Object.values(AttendanceStatus); // ['published', 'draft', 'archived']
 
-    return studentAttendanceCounts;
+    const counts = allStatuses.reduce(
+      (acc, status) => {
+        const found = studentAttendanceCounts.find(
+          (item) => item.status === status
+        );
+       
+      const count  = found ? found._count.status : 0;       
+        acc[status] = count
+        acc.TOTAL += count
+        return acc;
+      },
+      {TOTAL: 0} as Record<string, number>
+    );
+    return counts;
   }
 }
-
