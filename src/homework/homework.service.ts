@@ -42,9 +42,15 @@ export class HomeworkService {
         id: createHomeworkDto.assignedById,
       },
     });
-    const sectionExist = await this.prismaService.section.findUnique({
+    const sectionExist = await this.prismaService.section.findFirst({
       where: {
-        id: createHomeworkDto.sectionId,
+        course: {
+          subjects: {
+            some: {
+              id: createHomeworkDto.subjectId,
+            },
+          },
+        },
       },
     });
 
@@ -62,7 +68,7 @@ export class HomeworkService {
     const getStudent =
       await this.timetableService.findTeacherTimetableOfSpecificSection(
         createHomeworkDto.assignedById,
-        createHomeworkDto.sectionId
+        sectionExist.id
       );
 
     // console.log({ getStudent: getStudent });

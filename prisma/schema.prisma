@@ -174,7 +174,7 @@ model Subject {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
-  @@unique([code, courseId]) // Ensures code is unique for each course
+  @@unique([name, courseId]) // Ensures code is unique for each course
 }
 
 model Timetable {
@@ -192,6 +192,7 @@ model Timetable {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  @@unique([sectionId, day, period])
 }
 
 model Homework {

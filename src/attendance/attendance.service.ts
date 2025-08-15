@@ -32,7 +32,7 @@ export class AttendanceService {
     markedById: string,
     createAttendanceDto: CreateAttendanceDto
   ) {
-    const { subjectId, students, date, sectionId } = createAttendanceDto;
+    const { subjectId, students, date } = createAttendanceDto;
     // const currentTime = new Date();
     const startOfDay = new Date(date); // 2025-07-27T00:00:00.000Z
     const endOfDay = new Date(startOfDay);
@@ -64,9 +64,18 @@ export class AttendanceService {
 
     // check subject exists
 
-    const subjectExist = await this.prismaService.subject.findUnique({
+    const subjectExist = await this.prismaService.subject.findFirst({
       where: {
-        id: subjectId,
+        id:createAttendanceDto.subjectId,
+        // name: createAttendanceDto.name,
+        course: {
+          id:createAttendanceDto.courseId,
+          sections: {
+            some: {
+              id: createAttendanceDto.sectionId,
+            },
+          },
+        },
       },
     });
 
@@ -157,7 +166,7 @@ export class AttendanceService {
         by: ["status"],
         where: {
           studentId,
-        }, 
+        },
         _count: {
           status: true,
         },
@@ -170,13 +179,13 @@ export class AttendanceService {
         const found = studentAttendanceCounts.find(
           (item) => item.status === status
         );
-       
-      const count  = found ? found._count.status : 0;       
-        acc[status] = count
-        acc.TOTAL += count
+
+        const count = found ? found._count.status : 0;
+        acc[status] = count;
+        acc.TOTAL += count;
         return acc;
       },
-      {TOTAL: 0} as Record<string, number>
+      { TOTAL: 0 } as Record<string, number>
     );
     return counts;
   }

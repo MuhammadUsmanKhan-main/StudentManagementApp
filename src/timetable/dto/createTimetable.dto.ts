@@ -42,4 +42,8 @@ export class CreateTimetableDto extends TimetableEntity {
   @IsNotEmpty()
   @IsUUID()
   sectionId: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  courseId: string;
 }

@@ -38,12 +38,12 @@ import { CreateHomeworkDto } from "./dto/createHomework.dto";
 export class HomeworkController {
   constructor(private readonly homeworkService: HomeworkService) {}
 
-  @Version("1")
-  @Post("createHomework")
-  @HttpCode(200)
-//   @UsePipes(ValidationPipe)
-  // @Roles(Role.Admin)
-  createHomework(@Body() createHomeworkDto: CreateHomeworkDto) {
-    return this.homeworkService.createHomework(createHomeworkDto);
-  }
+//   @Version("1")
+//   @Post("createHomework")
+//   @HttpCode(200)
+// //   @UsePipes(ValidationPipe)
+//   // @Roles(Role.Admin)
+//   createHomework(@Body() createHomeworkDto: CreateHomeworkDto) {
+//     return this.homeworkService.createHomework(createHomeworkDto);
+//   }
 }

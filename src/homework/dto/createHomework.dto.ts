@@ -47,7 +47,5 @@ export class CreateHomeworkDto extends HomeworkEntity {
   @IsUUID()
   subjectId: string;
 
-  @IsNotEmpty()
-  @IsUUID()
-  sectionId: string;
+  
 }

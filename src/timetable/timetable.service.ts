@@ -15,11 +15,12 @@ import { UpdateTimetableDto } from "./dto/updateTimetable.dto";
 
 @Injectable()
 export class TimetableService {
-  constructor(private readonly prismaService: PrismaService,
+  constructor(
+    private readonly prismaService: PrismaService,
     private readonly teacherService: TeacherService,
     private readonly subjectService: SubjectService,
     private readonly sectionService: SectionService
-  ) { }
+  ) {}
 
   async findTeachersTimetable(teacherId: string) {
     const teacherTimeTable = await this.prismaService.timetable.findMany({
@@ -130,9 +131,14 @@ export class TimetableService {
     if (!subjectExist) {
       throw new NotFoundException("Subject does not exist");
     }
-    const sectionExist = await this.prismaService.section.findUnique({
+    const sectionExist = await this.prismaService.section.findFirst({
       where: {
         id: createTimetableDto.sectionId,
+        // name: createTimetableDto.name,
+        course: {
+          id:createTimetableDto.courseId
+          // grade: createTimetableDto.grade,
+        },
       },
     });
     if (!sectionExist) {
@@ -154,7 +160,7 @@ export class TimetableService {
         startTime: new Date(createTimetableDto.startTime),
         endTime: new Date(createTimetableDto.endTime),
         subjectId: createTimetableDto.subjectId,
-        sectionId: createTimetableDto.sectionId,
+        sectionId: sectionExist.id,
         teacherId: createTimetableDto.teacherId,
       },
       include: {
@@ -228,7 +234,7 @@ export class TimetableService {
       },
     });
 
-    if (!record) throw new NotFoundException('Timetable record not found');
+    if (!record) throw new NotFoundException("Timetable record not found");
     return record;
   }
 
@@ -238,21 +244,21 @@ export class TimetableService {
       const teacher = await this.prismaService.teacher.findUnique({
         where: { id: updateDto.teacherId },
       });
-      if (!teacher) throw new NotFoundException('Teacher not found');
+      if (!teacher) throw new NotFoundException("Teacher not found");
     }
 
     if (updateDto.subjectId) {
       const subject = await this.prismaService.subject.findUnique({
         where: { id: updateDto.subjectId },
       });
-      if (!subject) throw new NotFoundException('Subject not found');
+      if (!subject) throw new NotFoundException("Subject not found");
     }
 
     if (updateDto.sectionId) {
       const section = await this.prismaService.section.findUnique({
         where: { id: updateDto.sectionId },
       });
-      if (!section) throw new NotFoundException('Section not found');
+      if (!section) throw new NotFoundException("Section not found");
     }
 
     const updated = await this.prismaService.timetable.update({
@@ -268,7 +274,7 @@ export class TimetableService {
 
     return {
       ...updated,
-      message: 'Record updated successfully',
+      message: "Record updated successfully",
     };
   }
 
@@ -277,11 +283,10 @@ export class TimetableService {
       where: { id },
     });
 
-    if (!exists) throw new NotFoundException('Timetable record not found');
+    if (!exists) throw new NotFoundException("Timetable record not found");
 
     await this.prismaService.timetable.delete({ where: { id } });
 
-    return { message: 'Record deleted successfully' };
+    return { message: "Record deleted successfully" };
   }
-
 }

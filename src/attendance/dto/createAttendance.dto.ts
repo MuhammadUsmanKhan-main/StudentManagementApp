@@ -27,14 +27,17 @@ export class StudentAttendanceDto {
 }
 
 export class CreateAttendanceDto extends AttendanceEntity {
-
   @IsDate()
   @IsNotEmpty()
   date: Date;
-  
+
   // @IsString()
   // @IsNotEmpty()
   // markedById: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  courseId: string;
 
   @IsNotEmpty()
   @IsUUID()
@@ -48,7 +51,7 @@ export class CreateAttendanceDto extends AttendanceEntity {
   // @IsUUID()
   // courseId: string;
 
-   @IsArray()
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => StudentAttendanceDto)
   students: StudentAttendanceDto[];

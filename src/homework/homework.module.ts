@@ -17,6 +17,7 @@ import { TeacherService } from "src/teacher/teacher.service";
 import { SectionService } from "src/section/section.service";
 import { CourseModule } from "src/course/course.module";
 import { CourseService } from "src/course/course.service";
+import { TeacherHomeworkController } from "./teacher.homework.controller";
 // import { SubjectService } from './subject.service';
 // import { SubjectController } from './subject.controller';
 // import { TeacherController } from './teacher.controller';
@@ -32,7 +33,7 @@ import { CourseService } from "src/course/course.service";
     SectionModule,
     CourseModule,
   ],
-  controllers: [HomeworkController],
+  controllers: [HomeworkController,TeacherHomeworkController],
   providers: [
     HomeworkService,
     TimetableService,

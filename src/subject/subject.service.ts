@@ -12,11 +12,11 @@ export class SubjectService {
     private readonly courseService: CourseService
   ) { }
 
-  async findSubject(code: string, courseId: string) {
+  async findSubject(name: string, courseId: string) {
     const Subject = await this.prismaService.subject.findUnique({
       where: {
-        code_courseId: {
-          code,
+        name_courseId: {
+          name,
           courseId,
         },
       },
