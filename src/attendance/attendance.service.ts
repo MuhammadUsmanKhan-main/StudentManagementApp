@@ -64,18 +64,10 @@ export class AttendanceService {
 
     // check subject exists
 
-    const subjectExist = await this.prismaService.subject.findFirst({
+    const subjectExist = await this.prismaService.subject.findUnique({
       where: {
-        id:createAttendanceDto.subjectId,
+        id:subjectId,
         // name: createAttendanceDto.name,
-        course: {
-          id:createAttendanceDto.courseId,
-          sections: {
-            some: {
-              id: createAttendanceDto.sectionId,
-            },
-          },
-        },
       },
     });
 

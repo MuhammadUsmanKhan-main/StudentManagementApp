@@ -19,7 +19,7 @@ export class SectionService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly courseService: CourseService
-  ) { }
+  ) {}
 
   async findSection(name: Section, courseId: string) {
     const section = await this.prismaService.section.findUnique({
@@ -88,6 +88,28 @@ export class SectionService {
     });
   }
 
+  async getTeacherSections(teacherId: string) {
+    const sections = await this.prismaService.section.findMany({
+      where: {
+        timetableSlots: {
+          some: {
+            teacherId,
+          },
+        },
+      },
+      // distinct: ["courseId"], // ensures unique sections
+      select: {
+        id: true,
+        name: true,
+      },
+      orderBy: {
+        name: "asc",
+      },
+    });
+
+    return sections;
+  }
+
   async getSectionById(id: string) {
     const section = await this.prismaService.section.findUnique({
       where: { id },
@@ -127,7 +149,9 @@ export class SectionService {
         updateSectionDto.courseId
       );
       if (existing) {
-        throw new ConflictException("Another section with same name exists in this course");
+        throw new ConflictException(
+          "Another section with same name exists in this course"
+        );
       }
     }
 
@@ -158,11 +182,11 @@ export class SectionService {
       return {
         message: `Section ${section.name} deleted successfully.`,
       };
-
     } catch (error) {
-
-      if (error.code === 'P2003') {
-        throw new ConflictException("Cannot delete section as it is associated with other records.");
+      if (error.code === "P2003") {
+        throw new ConflictException(
+          "Cannot delete section as it is associated with other records."
+        );
       }
 
       // console.error("Section deletion failed:", error);

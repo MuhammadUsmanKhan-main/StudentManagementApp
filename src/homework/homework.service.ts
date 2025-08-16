@@ -42,15 +42,15 @@ export class HomeworkService {
         id: createHomeworkDto.assignedById,
       },
     });
-    const sectionExist = await this.prismaService.section.findFirst({
+    const sectionExist = await this.prismaService.section.findUnique({
       where: {
-        course: {
-          subjects: {
-            some: {
-              id: createHomeworkDto.subjectId,
-            },
-          },
-        },
+        id: createHomeworkDto.sectionId,
+      },
+    });
+
+    const courseExist = await this.prismaService.course.findUnique({
+      where: {
+        id: createHomeworkDto.courseId,
       },
     });
 
@@ -63,12 +63,17 @@ export class HomeworkService {
     if (!teacherExist) {
       throw new NotFoundException("Teacher not found");
     }
+    if (!courseExist) {
+      throw new NotFoundException("Class not found");
+    }
+
     // then get students of specific section of the particular teacher assigning homework
     // console.log({ sectionId: createHomeworkDto.sectionId });
     const getStudent =
       await this.timetableService.findTeacherTimetableOfSpecificSection(
         createHomeworkDto.assignedById,
-        sectionExist.id
+        sectionExist.id,
+        courseExist.id
       );
 
     // console.log({ getStudent: getStudent });
@@ -100,5 +105,22 @@ export class HomeworkService {
       message: `${createdHomeworks.length} students have been assigned with homework successfully.`,
       createdHomeworks,
     };
+  }
+
+  async getStudentHomeworks(id: string) {
+    return await this.prismaService.homework.findMany({
+      where: {
+        studentId: id,
+      },
+    });
+  }
+
+
+  async getTeacherAssignedHomeworks(id: string) {
+    return await this.prismaService.homework.findMany({
+      where: {
+        assignedById: id,
+      },
+    });
   }
 }

@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateSubjectDto } from "./dto/createSubject.dto";
 import { CourseService } from "src/course/course.service";
@@ -8,9 +12,10 @@ import { UpdateSubjectDto } from "./dto/updateSubject.dto";
 
 @Injectable()
 export class SubjectService {
-  constructor(private readonly prismaService: PrismaService,
+  constructor(
+    private readonly prismaService: PrismaService,
     private readonly courseService: CourseService
-  ) { }
+  ) {}
 
   async findSubject(name: string, courseId: string) {
     const Subject = await this.prismaService.subject.findUnique({
@@ -27,15 +32,14 @@ export class SubjectService {
   // //<=============================================Apis Related To Subject=======================================>
 
   async createSubject(createSubjectDto: CreateSubjectDto) {
-
     const courseExist = await this.prismaService.course.findUnique({
       where: {
-        id: createSubjectDto.courseId
-      }
-    })
+        id: createSubjectDto.courseId,
+      },
+    });
 
     if (!courseExist) {
-      throw new NotFoundException('Course does not exist')
+      throw new NotFoundException("Course does not exist");
     }
 
     const subjectExist = await this.findSubject(
@@ -73,7 +77,7 @@ export class SubjectService {
   }
 
   async getAllSubjects() {
-    return this.prismaService.subject.findMany({
+    return await this.prismaService.subject.findMany({
       include: {
         course: {
           select: {
@@ -81,6 +85,19 @@ export class SubjectService {
           },
         },
       },
+    });
+  }
+
+  async getTeacherSubjects(teacherId: string) {
+    return await this.prismaService.subject.findMany({
+      where: {
+        teachers: {
+          some: {
+            id: teacherId,
+          },
+        },
+      },
+      // distinct: ["id"],
     });
   }
 
@@ -112,19 +129,24 @@ export class SubjectService {
       throw new NotFoundException("Subject not found.");
     }
 
-    if ((dto.code && dto.code !== subject.code) || (dto.courseId && dto.courseId !== subject.courseId)) {
+    if (
+      (dto.code && dto.code !== subject.code) ||
+      (dto.courseId && dto.courseId !== subject.courseId)
+    ) {
       const duplicate = await this.prismaService.subject.findFirst({
         where: {
           code: dto.code || subject.code,
           courseId: dto.courseId || subject.courseId,
-          NOT: { id }, 
+          NOT: { id },
         },
       });
 
       console.log("Duplicate subject check:", duplicate);
 
       if (duplicate) {
-        throw new ConflictException("Another subject with the same code already exists in this course.");
+        throw new ConflictException(
+          "Another subject with the same code already exists in this course."
+        );
       }
     }
 
@@ -141,8 +163,6 @@ export class SubjectService {
       message: `Subject ${updated.name} updated successfully.`,
     };
   }
-
-
 
   async deleteSubject(id: string) {
     const subject = await this.prismaService.subject.findUnique({

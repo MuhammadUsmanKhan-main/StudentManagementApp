@@ -226,6 +226,8 @@ export class StudentService {
       },
       select: {
         id: true,
+        firstName:true,
+        lastName:true
       },
     });
 

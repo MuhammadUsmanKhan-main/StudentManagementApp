@@ -67,9 +67,24 @@ export class TimetableService {
   //   return timeTable;
   // }
 
+  // async findAllStudentsOnTimetable(createTimetableDto: CreateTimetableDto) {
+  //   const timeTable = await this.prismaService.timetable.findFirst({
+  //     where: {
+  //       day: createTimetableDto.day,
+  //       // period: createTimetableDto.period,
+  //       startTime: createTimetableDto.startTime,
+  //       teacherId: createTimetableDto.teacherId,
+  //       // sectionId: createTimetableDto.sectionId,
+  //     },
+  //   });
+  //   return timeTable;
+  // }
+
+  
   async findTeacherTimetableOfSpecificSection(
     teacherId: string,
-    sectionId: string
+    sectionId: string,
+    courseId: string
   ) {
     const timeTable = await this.prismaService.timetable.findFirst({
       where: {
@@ -78,6 +93,9 @@ export class TimetableService {
         // startTime: createTimetableDto.startTime,
         teacherId,
         sectionId,
+        section: {
+          courseId,
+        },
         // subjectId:createTimetableDto.subjectId
       },
       include: {
@@ -95,19 +113,7 @@ export class TimetableService {
     return timeTable;
   }
 
-  // async findAllStudentsOnTimetable(createTimetableDto: CreateTimetableDto) {
-  //   const timeTable = await this.prismaService.timetable.findFirst({
-  //     where: {
-  //       day: createTimetableDto.day,
-  //       // period: createTimetableDto.period,
-  //       startTime: createTimetableDto.startTime,
-  //       teacherId: createTimetableDto.teacherId,
-  //       // sectionId: createTimetableDto.sectionId,
-  //     },
-  //   });
-  //   return timeTable;
-  // }
-
+  
   // //<=============================================Apis Related To Subject=======================================>
 
   async createRecordOnTimetable(createTimetableDto: CreateTimetableDto) {
@@ -131,14 +137,10 @@ export class TimetableService {
     if (!subjectExist) {
       throw new NotFoundException("Subject does not exist");
     }
-    const sectionExist = await this.prismaService.section.findFirst({
+    const sectionExist = await this.prismaService.section.findUnique({
       where: {
         id: createTimetableDto.sectionId,
         // name: createTimetableDto.name,
-        course: {
-          id:createTimetableDto.courseId
-          // grade: createTimetableDto.grade,
-        },
       },
     });
     if (!sectionExist) {

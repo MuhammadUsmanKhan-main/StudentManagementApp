@@ -15,6 +15,7 @@ import {
   Version,
   Request,
   Put,
+  Req,
 } from "@nestjs/common";
 // import { AdminService } from './admin.service';
 // import { StudentService } from './student.service';
@@ -22,43 +23,30 @@ import { AuthGuard } from "@nestjs/passport";
 import { Roles } from "src/auth/decorator/roles.decorator";
 import { RolesGuard } from "src/auth/guard/role.guard";
 import { Role } from "src/common/enums/role.enum";
-import { CourseService } from "./course.service";
-import { CreateCourseDto } from "./dto/createCourse.dto";
-import { UpdateCourseDto } from "./dto/updateCourse.dto";
+import { SubjectService } from "./subject.service";
+// import { CourseService } from "./course.service";
+// import { CreateCourseDto } from "./dto/createCourse.dto";
+// import { UpdateCourseDto } from "./dto/updateCourse.dto";
 // import { TeacherService } from "./teacher.service";
 // import { CreateTeacherDto } from "./dto/createTeacher.dto";
 // import { UserService } from './user.service';
 // import { SignUpUserDto } from './dto/signup-user.dto';
 // import { SignInUserDto } from './dto/signin-user.dto';
 @UseGuards(AuthGuard("jwt"), RolesGuard)
-@Roles(Role.Admin)
-@Controller("admin/course")
-export class AdminCourseController {
-  constructor(private readonly courseService: CourseService) { }
+@Roles(Role.Teacher)
+@Controller("teacher/subject")
+export class TeacherSubjectController {
+  constructor(private readonly subjectService: SubjectService) { }
 
-  @Version("1")
-  @Post("createCourse")
+
+@Version("1")
+  @Get("getTeacherSubjects")
   @HttpCode(200)
-  @UsePipes(ValidationPipe)
+//   @UsePipes(ValidationPipe)
   // @Roles(Role.Admin)
-  createCourse(@Body() createCourseDto: CreateCourseDto) {
-    return this.courseService.createCourse(createCourseDto);
+  getTeacherSubjects(@Req() req) {
+    const teacherId = req.user.id
+    return this.subjectService.getTeacherSubjects(teacherId);
   }
-  
-  @Version("1")
-  @Put('updateCourse/:id')
-  updateCourse(
-    @Param('id') id: string,
-    @Body() updateCourseDto: UpdateCourseDto,
-  ) {
-    return this.courseService.updateCourse(id, updateCourseDto);
-  }
-
-  @Version("1")
-  @Delete('deleteCourse/:id')
-  deleteCourse(@Param('id') id: string) {
-    return this.courseService.deleteCourse(id);
-  }
-
 
 }

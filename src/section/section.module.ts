@@ -12,6 +12,7 @@ import { SectionController } from "./section.controller";
 import { CourseModule } from "src/course/course.module";
 import { CourseService } from "src/course/course.service";
 import { AdminSectionController } from "./admin.section.controller";
+import { TeacherSectionController } from "./teacher.section.controller";
 // import { SubjectService } from './subject.service';
 // import { SubjectController } from './subject.controller';
 // import { TeacherController } from './teacher.controller';
@@ -21,7 +22,7 @@ import { AdminSectionController } from "./admin.section.controller";
 
 @Module({
   imports: [CourseModule],
-  controllers: [SectionController, AdminSectionController],
+  controllers: [SectionController, AdminSectionController, TeacherSectionController],
   providers: [SectionService, CourseService],
 })
 export class SectionModule {}
